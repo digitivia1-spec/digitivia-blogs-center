@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Publishing Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --primary: #FF6D00; /* n8n Orangeish */
+            --text-dark: #333;
+            --text-light: #666;
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 { margin: 0; font-size: 24px; }
+
+        .refresh-btn {
+            background-color: var(--text-dark);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Grid Layout */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+
+        .card:hover { transform: translateY(-5px); }
+
+        .card-image {
+            height: 200px;
+            background-color: #eee;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .no-image-placeholder {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+            background: #e0e0e0;
+        }
+
+        .card-body {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Inputs */
+        .edit-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        textarea.edit-input {
+            resize: vertical;
+            min-height: 120px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .label {
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #aaa;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* Actions */
+        .card-actions {
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-publish {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .btn-publish:hover { background-color: #e65c00; }
+        
+        .btn-publish:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading { opacity: 0.5; pointer-events: none; }
+        
+        /* Status Toast */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+        }
+
+        #toast.show { visibility: visible; -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Wordpress Review Dashboard</h1>
+        <button onclick="fetchDrafts()" class="refresh-btn">Refresh List</button>
+    </header>
+
+    <div id="blog-grid" class="blog-grid">
+        <p style="color:#888;">Loading drafts...</p>
+    </div>
+</div>
+
+<div id="toast">Published Successfully!</div>
+
+<script>
+    // CONFIGURATION
+    // ---------------------------------------------------------
+    // REPLACE THIS WITH YOUR ACTUAL N8N WEBHOOK URL
+    const N8N_WEBHOOK_URL = 'https://your-n8n-instance.com/webhook/blog-dashboard'; 
+    // ---------------------------------------------------------
+
+    async function fetchDrafts() {
+        const grid = document.getElementById('blog-grid');
+        grid.innerHTML = '<p style="color:#888;">Loading drafts...</p>';
+
+        try {
+            const response = await fetch(N8N_WEBHOOK_URL, { method: 'GET' });
+            const data = await response.json();
+            
+            grid.innerHTML = ''; // Clear loading
+
+            if (data.length === 0) {
+                grid.innerHTML = '<p>No drafts pending review.</p>';
+                return;
+            }
+
+            data.forEach(post => {
+                const card = createCard(post);
+                grid.appendChild(card);
+            });
+
+        } catch (error) {
+            console.error('Error:', error);
+            grid.innerHTML = '<p style="color:red;">Error connecting to n8n. Check console.</p>';
+        }
+    }
+
+    function createCard(post) {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.id = `card-${post.id}`;
+
+        // Handle Image Logic
+        let imageHtml = '';
+        if (post.image_url && post.image_url.trim() !== "") {
+            imageHtml = `<div class="card-image" style="background-image: url('${post.image_url}')"></div>`;
+        } else {
+            imageHtml = `<div class="card-image"><div class="no-image-placeholder">No Image Available</div></div>`;
+        }
+
+        div.innerHTML = `
+            ${imageHtml}
+            <div class="card-body">
+                <div>
+                    <span class="label">Title</span>
+                    <input type="text" class="edit-input title-input" value="${post.title || ''}">
+                </div>
+                <div>
+                    <span class="label">Content (HTML/Markdown)</span>
+                    <textarea class="edit-input content-input">${post.content || ''}</textarea>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-publish" onclick="publishPost('${post.id}', '${post.image_url || ''}')">
+                        Approve & Post
+                    </button>
+                </div>
+            </div>
+        `;
+        return div;
+    }
+
+    async function publishPost(id, imageUrl) {
+        const card = document.getElementById(`card-${id}`);
+        const title = card.querySelector('.title-input').value;
+        const content = card.querySelector('.content-input').value;
+        const btn = card.querySelector('.btn-publish');
+
+        // UI Loading State
+        card.classList.add('loading');
+        btn.innerText = 'Publishing...';
+        btn.disabled = true;
+
+        const payload = {
+            id: id,
+            new_title: title,
+            new_content: content,
+            image_url: imageUrl
+        };
+
+        try {
+            // Send to n8n (POST request)
+            const response = await fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                // Remove card from UI on success
+                card.style.transform = 'scale(0.9)';
+                card.style.opacity = '0';
+                setTimeout(() => card.remove(), 300);
+                showToast("Published to WordPress!");
+            } else {
+                alert("Failed to publish. Check n8n execution log.");
+                resetCardState(card, btn);
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Error sending request.");
+            resetCardState(card, btn);
+        }
+    }
+
+    function resetCardState(card, btn) {
+        card.classList.remove('loading');
+        btn.innerText = 'Approve & Post';
+        btn.disabled = false;
+    }
+
+    function showToast(message) {
+        const x = document.getElementById("toast");
+        x.innerText = message;
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+    }
+
+    // Load on start
+    fetchDrafts();
+</script>
+
+</body>
+</html>
