@@ -615,6 +615,99 @@
       .hdr { flex-direction: column; align-items: flex-start; }
       .quality-grid { grid-template-columns: 1fr; }
     }
+
+
+    /* Professional responsive calendar + progress layer */
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+    .calendar-topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin: 0 0 12px; }
+    .manual-generate-btn { background: linear-gradient(135deg, var(--teal), #38bdf8); color:#fff; box-shadow:0 10px 24px rgba(18,165,148,.20); }
+    .manual-generate-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+    .clean-btn { border-color: rgba(96,165,250,.35); color: var(--blue); }
+    .ctbl { table-layout: fixed; min-width: 1280px !important; }
+    .ctbl th:nth-child(1), .ctbl td:nth-child(1) { width: 42px; }
+    .ctbl th:nth-child(2), .ctbl td:nth-child(2) { width: 380px; }
+    .ctbl th:nth-child(3), .ctbl td:nth-child(3) { width: 210px; }
+    .ctbl th:nth-child(4), .ctbl td:nth-child(4) { width: 150px; }
+    .ctbl th:nth-child(5), .ctbl td:nth-child(5) { width: 140px; }
+    .ctbl th:nth-child(6), .ctbl td:nth-child(6) { width: 140px; }
+    .ctbl th:nth-child(7), .ctbl td:nth-child(7) { width: 360px; }
+    .ctbl th:nth-child(8), .ctbl td:nth-child(8) { width: 120px; }
+    .ctbl th:nth-child(9), .ctbl td:nth-child(9) { width: 110px; }
+    .ctbl td, .ctbl th, .topic-main, .topic-sub, .evidence-summary, .source-chip span, .mini-score, .chip {
+      writing-mode: horizontal-tb !important;
+      text-orientation: mixed !important;
+      word-break: normal !important;
+      overflow-wrap: break-word !important;
+      white-space: normal;
+      hyphens: none !important;
+      min-width: 0;
+    }
+    .topic-main { max-width: none; font-size: 14px; line-height: 1.45; }
+    .topic-sub { max-width: none; font-size: 12px; }
+    .evidence-summary { max-width: none; }
+    .source-chip span { max-width: 280px; }
+    .topic-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px; }
+    .status-stack { display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
+    .loading-row { opacity:.68; pointer-events:none; }
+
+    #progress-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7,17,31,.72);
+      backdrop-filter: blur(10px);
+      z-index: 9998;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #progress-overlay.on { display:flex; }
+    .progress-card {
+      width: min(620px, 92vw);
+      background: linear-gradient(145deg, rgba(21,32,50,.98), rgba(15,31,53,.96));
+      border: 1px solid rgba(18,165,148,.35);
+      border-radius: 18px;
+      box-shadow: var(--shadow), 0 0 0 1px rgba(18,165,148,.12);
+      padding: 24px;
+    }
+    .progress-title { font-size: 18px; font-weight: 900; margin-bottom: 8px; }
+    .progress-sub { color: var(--muted-2); font-size: 13px; line-height: 1.55; margin-bottom: 16px; }
+    .progress-track { height: 12px; background: rgba(36,59,85,.75); border-radius: 999px; overflow:hidden; border:1px solid var(--border-2); }
+    .progress-fill { height: 100%; width: 10%; background: linear-gradient(90deg, var(--teal), #60a5fa); border-radius: 999px; transition: width .35s ease; }
+    .progress-steps { display:grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+    .progress-step { font-size: 11px; color: var(--muted); border:1px solid var(--border); border-radius: 999px; padding: 6px 8px; text-align:center; }
+    .progress-step.on { color:#fff; border-color: rgba(18,165,148,.45); background: rgba(18,165,148,.10); }
+
+    @media (max-width: 900px) {
+      .tbl-wrap { overflow: visible; border: 0; }
+      table.ctbl, .ctbl thead, .ctbl tbody, .ctbl tr, .ctbl td { display:block; width:100% !important; min-width:0 !important; }
+      .ctbl thead { display:none; }
+      .ctbl tr { background: rgba(21,32,50,.98); border:1px solid var(--border); border-radius: var(--radius); margin-bottom:14px; padding: 10px 12px; box-shadow: var(--shadow); }
+      .ctbl td { border-bottom:1px solid rgba(30,50,80,.45); padding: 10px 0 10px 108px; position:relative; min-height: 38px; }
+      .ctbl td:last-child { border-bottom:0; }
+      .ctbl td::before { position:absolute; left:0; top:10px; width:92px; color: var(--muted); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; }
+      .ctbl td:nth-child(1)::before { content:'#'; }
+      .ctbl td:nth-child(2)::before { content:'Topic'; }
+      .ctbl td:nth-child(3)::before { content:'Keyword'; }
+      .ctbl td:nth-child(4)::before { content:'Market'; }
+      .ctbl td:nth-child(5)::before { content:'Scores'; }
+      .ctbl td:nth-child(6)::before { content:'Trend'; }
+      .ctbl td:nth-child(7)::before { content:'Evidence'; }
+      .ctbl td:nth-child(8)::before { content:'Status'; }
+      .ctbl td:nth-child(9)::before { content:'Added'; }
+      .mini-scores { justify-content:flex-start; }
+      .source-chip span { max-width: 64vw; }
+      .progress-steps { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 560px) {
+      .ctbl td { padding-left: 0; padding-top: 28px; }
+      .ctbl td::before { top: 8px; width: auto; }
+      .cal-actions, .calendar-topbar, .hdr-right { width:100%; justify-content: stretch; }
+      .cal-actions .btn, .calendar-topbar .btn, .hdr-right .btn { flex: 1 1 100%; }
+      .source-chip span { max-width: 76vw; }
+    }
+
   </style>
 </head>
 <body>
@@ -630,6 +723,7 @@
     </div>
     <div class="hdr-right">
       <button class="btn btn-ghost" onclick="refreshCurrent()">↻ Refresh</button>
+      <button class="btn btn-ghost clean-btn" onclick="cleanDashboardView()">🧹 Clean View</button>
     </div>
   </header>
 
@@ -677,6 +771,7 @@
         </p>
       </div>
       <div class="cal-actions">
+        <button class="btn manual-generate-btn" onclick="generateNextPendingBlog()">✨ Generate Blog</button>
         <button class="btn btn-ghost" onclick="toggleGenerator()">⚡ Generate Daily Topics</button>
         <button class="btn btn-teal" onclick="toggleAddForm()">+ Add Topic</button>
       </div>
@@ -803,6 +898,19 @@
 </div>
 
 <div id="toast">✓ Done</div>
+<div id="progress-overlay" aria-live="polite">
+  <div class="progress-card">
+    <div class="progress-title" id="progress-title">Working…</div>
+    <div class="progress-sub" id="progress-sub">Preparing your request.</div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-steps">
+      <div class="progress-step" id="ps-1">Prepare</div>
+      <div class="progress-step" id="ps-2">Research</div>
+      <div class="progress-step" id="ps-3">Generate</div>
+      <div class="progress-step" id="ps-4">Refresh</div>
+    </div>
+  </div>
+</div>
 
 <div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:800;align-items:center;justify-content:center;padding:20px;" onclick="closeModal()">
   <div id="modal-box" style="background:var(--card);border:1px solid var(--border-2);border-radius:var(--radius);max-width:900px;width:100%;max-height:90vh;overflow-y:auto;padding:28px;position:relative;" onclick="event.stopPropagation()">
@@ -817,6 +925,7 @@
 ════════════════════════════════════════ */
 const WH       = 'https://n8n.srv1174105.hstgr.cloud/webhook/blog-dashboard';
 const WH_CAL   = 'https://n8n.srv1174105.hstgr.cloud/webhook/blog-calendar';
+const WH_GEN   = 'https://n8n.srv1174105.hstgr.cloud/webhook/blog-generate';
 const SITE_URL = 'https://digitivia.com';
 
 /*
@@ -873,6 +982,7 @@ function updateStats() {
 async function fetchDrafts() {
   const grid = document.getElementById('blog-grid');
   grid.innerHTML = '<div class="empty"><div class="spinner"></div>Loading drafts…</div>';
+  setProgress(18, 'Loading drafts', 'Fetching draft posts from n8n…', 1);
   try {
     const res = await fetch(WH, { method: 'GET' });
     let data = await res.json();
@@ -880,8 +990,10 @@ async function fetchDrafts() {
     _drafts = data.filter(d => d && d.id);
     updateStats();
     renderDrafts();
+    finishProgress('Drafts loaded');
   } catch (e) {
     console.error(e);
+    failProgress('Could not load drafts');
     grid.innerHTML = '<div class="empty" style="color:var(--danger);">⚠ Could not reach n8n. Check that the workflow is active.</div>';
   }
 }
@@ -1186,6 +1298,7 @@ async function publishPost(id, imgUrl) {
   card.classList.add('loading');
   btn.textContent = 'Publishing…';
   btn.disabled = true;
+  startSoftProgress('Publishing to WordPress', 'Sending final content, schema, metadata, and draft ID…');
 
   const draft = _drafts.find(d => String(d.id) === String(id)) || {};
   const payload = {
@@ -1222,9 +1335,11 @@ async function publishPost(id, imgUrl) {
         updateStats();
         if (_drafts.length === 0) renderDrafts();
       }, 320);
+      finishProgress('Published successfully');
       toast('🚀 Published to WordPress!');
     } else {
       const err = await res.text();
+      failProgress('Publish failed');
       alert('Publish failed: ' + err);
       card.classList.remove('loading');
       btn.textContent = '✓ Approve & Publish';
@@ -1232,6 +1347,7 @@ async function publishPost(id, imgUrl) {
     }
   } catch (e) {
     console.error(e);
+    failProgress('Network error');
     alert('Network error — check console.');
     card.classList.remove('loading');
     btn.textContent = '✓ Approve & Publish';
@@ -1245,6 +1361,7 @@ async function publishPost(id, imgUrl) {
 async function fetchCalendar() {
   const tbody = document.getElementById('cal-body');
   tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:50px;"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin:0 auto;"></div></td></tr>';
+  setProgress(20, 'Loading calendar', 'Fetching source-backed topic rows…', 1);
   try {
     const res = await fetch(WH_CAL, { method: 'GET' });
     let data = await res.json();
@@ -1252,8 +1369,10 @@ async function fetchCalendar() {
     _topics = data.filter(t => t && (t.topic || t.id));
     updateStats();
     renderCalendar();
+    finishProgress('Calendar loaded');
   } catch (e) {
     console.error(e);
+    failProgress('Could not load calendar');
     tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--danger);">⚠ Could not load calendar. Check n8n workflow is active.</td></tr>';
   }
 }
@@ -1311,7 +1430,7 @@ function calendarRow(row, i) {
         <div style="margin-top:8px;" class="source-list">${renderSourceChips(sources, 2)}</div>
         <button class="btn btn-ghost btn-sm" style="margin-top:8px;" onclick="openSources('${id}', 'topic')">Evidence</button>
       </td>
-      <td><span class="chip chip-${escAttr(row.status || 'pending')}">${esc(row.status || 'pending')}</span></td>
+      <td><div class="status-stack"><span class="chip chip-${escAttr(row.status || 'pending')}">${esc(row.status || 'pending')}</span>${(row.status || 'pending') === 'pending' ? `<button class="btn manual-generate-btn btn-sm" onclick="generateBlogFromTopic('${id}')">✨ Generate</button>` : ''}</div></td>
       <td style="color:var(--muted);font-size:12px;">${row.createdAt ? new Date(row.createdAt).toLocaleDateString('en-GB') : '—'}</td>
     </tr>`;
 }
@@ -1341,6 +1460,7 @@ async function generateDailyTopics() {
 
   btn.textContent = 'Generating…';
   btn.disabled = true;
+  startSoftProgress('Generating daily topics', 'Researching market signals and SEO/GEO/AEO opportunities…');
 
   const payload = {
     action: 'generate_daily_topics',
@@ -1367,11 +1487,13 @@ async function generateDailyTopics() {
       throw new Error(txt || res.status);
     }
 
+    finishProgress('Topics generated');
     toast('⚡ Daily source topics requested!');
     fetchCalendar();
   } catch (e) {
     console.error(e);
-    alert('Generation failed. Add the backend Switch/IF for action=generate_daily_topics in n8n. Details: ' + e.message);
+    failProgress('Daily topic generation failed');
+    alert('Generation failed. Details: ' + e.message);
   } finally {
     btn.textContent = 'Generate';
     btn.disabled = false;
@@ -1449,6 +1571,107 @@ function autoFixMeta(id) {
   updateCounter(metaEl, id);
   refreshSEO(id);
   toast('✓ Meta description fitted to SEO range');
+}
+
+
+
+/* ════════════════════════════════════════
+   MANUAL BLOG GENERATION + PROGRESS
+════════════════════════════════════════ */
+let _progressTimer = null;
+
+function setProgress(percent, title, sub, step=1) {
+  const overlay = document.getElementById('progress-overlay');
+  const fill = document.getElementById('progress-fill');
+  if (!overlay || !fill) return;
+  overlay.classList.add('on');
+  fill.style.width = Math.max(5, Math.min(100, percent)) + '%';
+  document.getElementById('progress-title').textContent = title || 'Working…';
+  document.getElementById('progress-sub').textContent = sub || 'Please wait.';
+  for (let i=1;i<=4;i++) document.getElementById('ps-'+i)?.classList.toggle('on', i <= step);
+}
+
+function startSoftProgress(title, sub) {
+  clearInterval(_progressTimer);
+  let p = 10;
+  setProgress(p, title, sub, 1);
+  _progressTimer = setInterval(() => {
+    p = Math.min(88, p + Math.max(1, Math.round((90 - p) / 9)));
+    const step = p > 70 ? 3 : p > 38 ? 2 : 1;
+    setProgress(p, title, step === 1 ? 'Preparing the request…' : step === 2 ? 'Collecting source evidence…' : 'Generating the blog draft…', step);
+  }, 800);
+}
+
+function finishProgress(message='Done') {
+  clearInterval(_progressTimer);
+  setProgress(100, message, 'Refreshing the dashboard…', 4);
+  setTimeout(() => document.getElementById('progress-overlay')?.classList.remove('on'), 650);
+}
+
+function failProgress(message='Something failed') {
+  clearInterval(_progressTimer);
+  setProgress(100, 'Action failed', message, 1);
+  setTimeout(() => document.getElementById('progress-overlay')?.classList.remove('on'), 1200);
+}
+
+function cleanDashboardView() {
+  if (_tab === 'calendar') {
+    _topics = [];
+    document.getElementById('cal-body').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:60px;color:var(--muted);">Clean view is empty. Click Refresh to load calendar topics again.</td></tr>';
+  } else {
+    _drafts = [];
+    document.getElementById('blog-grid').innerHTML = '<div class="empty">Clean view is empty. Click Refresh to load drafts again.</div>';
+  }
+  updateStats();
+  toast('🧹 Dashboard view cleaned');
+}
+
+function topicPayload(row) {
+  return {
+    id: row.id || row.row_id || '',
+    topic: row.topic || row.title || '',
+    focus_keyword: row.focus_keyword || row.keyword || '',
+    country: row.country || 'Global',
+    industry: row.industry || 'AI automation',
+    language: row.language || 'english',
+    search_intent: row.search_intent || row.intent || 'commercial',
+    source_mode: row.source_mode || 'button_generate',
+    evidence_json: row.evidence_json || row.proof_json || '[]',
+    action: 'generate_blog_now'
+  };
+}
+
+async function generateBlogFromTopic(id) {
+  const row = _topics.find(t => String(t.id || t.topic) === String(id));
+  if (!row) { alert('Topic not found. Refresh the calendar and try again.'); return; }
+  await requestBlogGeneration(topicPayload(row));
+}
+
+async function generateNextPendingBlog() {
+  if (!_topics.length) await fetchCalendar();
+  const row = _topics.find(t => (t.status || 'pending') === 'pending') || _topics[0];
+  if (!row) { alert('No topic found. Add or generate a topic first.'); return; }
+  await requestBlogGeneration(topicPayload(row));
+}
+
+async function requestBlogGeneration(payload) {
+  startSoftProgress('Generating blog draft', 'Preparing the selected topic for source-backed generation…');
+  try {
+    const res = await fetch(WH_GEN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(await res.text() || String(res.status));
+    finishProgress('Blog draft generated');
+    toast('✨ Blog draft generated');
+    await fetchDrafts();
+    if (_tab !== 'drafts') switchTab('drafts');
+  } catch (e) {
+    console.error(e);
+    failProgress('Check the n8n blog-generate webhook execution.');
+    alert('Blog generation failed: ' + e.message);
+  }
 }
 
 /* ════════════════════════════════════════
