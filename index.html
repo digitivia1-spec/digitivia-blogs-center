@@ -1,693 +1,1100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digitivia Blog Publishing Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-gradient-start: #0f172a;
-            --bg-gradient-end: #0d1b1e;
-            --card-bg: #1e293b;
-            --primary: #12A594;
-            --primary-hover: #0e8a7a;
-            --text-white: #ffffff;
-            --text-light: #94a3b8;
-            --border-color: #334155;
-            --border-radius: 12px;
-            --input-bg: #0f172a;
-            --danger: #ef4444;
-            --warn: #f59e0b;
-            --success: #22c55e;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digitivia Blog Publishing Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ══════════════════════════════════════════════
+       RESET & TOKENS
+    ══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        * { box-sizing: border-box; }
+    :root {
+      --bg:        #07111f;
+      --surface:   #0f1f35;
+      --card:      #152032;
+      --card-hover:#1a2a3f;
+      --border:    #1e3250;
+      --border-2:  #243b55;
+      --teal:      #12A594;
+      --teal-dk:   #0d8a7a;
+      --teal-glow: rgba(18,165,148,.18);
+      --white:     #f0f6ff;
+      --muted:     #6b8099;
+      --danger:    #ef4444;
+      --warn:      #f59e0b;
+      --success:   #22c55e;
+      --radius:    14px;
+      --radius-sm: 8px;
+      --shadow:    0 8px 32px rgba(0,0,0,.45);
+    }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
-            margin: 0;
-            padding: 30px;
-            color: var(--text-white);
-            min-height: 100vh;
-        }
+    html { scroll-behavior: smooth; }
 
-        .container { max-width: 1300px; margin: 0 auto; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      min-height: 100vh;
+      padding: 28px 24px 80px;
+    }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
+    /* ══════════════════════════════════════════════
+       LAYOUT
+    ══════════════════════════════════════════════ */
+    .wrap { max-width: 1380px; margin: 0 auto; }
 
-        .logo { height: 50px; width: auto; }
+    /* ══════════════════════════════════════════════
+       HEADER
+    ══════════════════════════════════════════════ */
+    .hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
 
-        .header-actions { display: flex; gap: 10px; align-items: center; }
+    .logo { height: 46px; width: auto; }
 
-        /* ── Tabs ── */
-        .tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 28px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0;
-        }
+    .hdr-right { display: flex; gap: 10px; align-items: center; }
 
-        .tab-btn {
-            padding: 10px 22px;
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            color: var(--text-light);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: -1px;
-        }
+    .stats-bar {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
 
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
+    .stat-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        .tab-btn:hover { color: var(--text-white); }
+    .stat-pill span { color: var(--white); font-size: 13px; }
 
-        .tab-panel { display: none; }
-        .tab-panel.active { display: block; }
+    /* ══════════════════════════════════════════════
+       TABS
+    ══════════════════════════════════════════════ */
+    .tabs {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 30px;
+    }
 
-        /* ── Buttons ── */
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            border: none;
-            transition: all 0.2s ease;
-        }
+    .tab {
+      padding: 11px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      transition: color .2s, border-color .2s;
+      margin-bottom: -1px;
+      letter-spacing: .01em;
+    }
 
-        .btn-outline {
-            background: transparent;
-            color: var(--text-white);
-            border: 1px solid var(--border-color);
-        }
-        .btn-outline:hover { background: var(--border-color); }
+    .tab:hover { color: var(--white); }
+    .tab.on { color: var(--teal); border-bottom-color: var(--teal); }
 
-        .btn-primary {
-            background: var(--primary);
-            color: var(--text-white);
-        }
-        .btn-primary:hover { background: var(--primary-hover); }
-        .btn-primary:disabled { background: var(--text-light); cursor: not-allowed; opacity: 0.7; }
+    .panel { display: none; }
+    .panel.on { display: block; }
 
-        .btn-danger {
-            background: transparent;
-            color: var(--danger);
-            border: 1px solid var(--danger);
-        }
-        .btn-danger:hover { background: rgba(239,68,68,0.1); }
+    /* ══════════════════════════════════════════════
+       BUTTONS
+    ══════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .18s;
+      letter-spacing: .01em;
+      white-space: nowrap;
+    }
 
-        .btn-sm { padding: 6px 14px; font-size: 12px; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border-2);
+    }
+    .btn-ghost:hover { background: var(--surface); color: var(--white); }
 
-        /* ── Grid ── */
-        .blog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 28px;
-        }
+    .btn-teal {
+      background: var(--teal);
+      color: #fff;
+    }
+    .btn-teal:hover { background: var(--teal-dk); }
+    .btn-teal:disabled { background: var(--border-2); color: var(--muted); cursor: not-allowed; }
 
-        /* ── Card ── */
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.15);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.2s, opacity 0.3s;
-        }
+    .btn-danger-outline {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid rgba(239,68,68,.3);
+    }
+    .btn-danger-outline:hover { background: rgba(239,68,68,.08); }
 
-        .card:hover { transform: translateY(-4px); }
+    .btn-sm { padding: 6px 13px; font-size: 12px; }
 
-        .card-image {
-            height: 200px;
-            background: var(--input-bg);
-            background-size: cover;
-            background-position: center;
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
-        }
+    /* ══════════════════════════════════════════════
+       BLOG GRID
+    ══════════════════════════════════════════════ */
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 24px;
+    }
 
-        .no-image-placeholder {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-light);
-            font-size: 13px;
-            gap: 8px;
-        }
+    /* ══════════════════════════════════════════════
+       CARD
+    ══════════════════════════════════════════════ */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+      transition: transform .22s, border-color .22s, opacity .3s;
+    }
 
-        .country-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(15,23,42,0.85);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 3px 10px;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-2);
+    }
 
-        .card-body {
-            padding: 22px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+    /* Thumbnail */
+    .thumb {
+      height: 210px;
+      background: var(--surface);
+      background-size: cover;
+      background-position: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
 
-        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .thumb-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(7,17,31,.8) 100%);
+    }
 
-        .label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--primary);
-            margin-bottom: 6px;
-            display: block;
-        }
+    .thumb-badges {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
 
-        .edit-input {
-            width: 100%;
-            padding: 10px 14px;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            color: var(--text-white);
-            transition: border-color 0.2s;
-        }
+    .badge {
+      background: rgba(7,17,31,.82);
+      border: 1px solid var(--border-2);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
 
-        .edit-input:focus { outline: none; border-color: var(--primary); }
+    .badge-teal { color: var(--teal); border-color: rgba(18,165,148,.4); }
+    .badge-white { color: var(--white); }
 
-        textarea.edit-input { resize: vertical; min-height: 130px; line-height: 1.5; }
-        textarea.meta-input { min-height: 72px; }
+    .no-img {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
 
-        select.edit-input { cursor: pointer; appearance: none; }
+    /* Card body */
+    .cbody {
+      padding: 22px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
 
-        /* SEO counter */
-        .meta-wrapper { position: relative; }
-        .char-count {
-            font-size: 11px;
-            margin-top: 4px;
-            text-align: right;
-            font-weight: 600;
-        }
-        .char-count.good { color: var(--success); }
-        .char-count.warn { color: var(--warn); }
-        .char-count.bad  { color: var(--danger); }
+    /* SEO score bar */
+    .seo-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+    }
 
-        /* Preview */
-        .preview-box {
-            background: #fff;
-            border-radius: 8px;
-            padding: 18px;
-            color: #1b1b1b;
-            font-size: 14px;
-            max-height: 360px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            display: none;
-        }
+    .seo-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; flex-shrink: 0; }
 
-        .card-actions {
-            margin-top: auto;
-            padding-top: 10px;
-            display: flex;
-            gap: 10px;
-        }
+    .seo-pills { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
 
-        .loading { opacity: 0.6; pointer-events: none; }
+    .seo-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid;
+    }
 
-        /* ── Content Calendar ── */
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+    .seo-good  { color: var(--success); border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.08); }
+    .seo-warn  { color: var(--warn);    border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.08); }
+    .seo-bad   { color: var(--danger);  border-color: rgba(239,68,68,.35);  background: rgba(239,68,68,.08); }
 
-        .cal-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
+    /* Fields */
+    .lbl {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--teal);
+      margin-bottom: 5px;
+    }
 
-        .cal-table th {
-            text-align: left;
-            padding: 10px 14px;
-            color: var(--text-light);
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            border-bottom: 1px solid var(--border-color);
-        }
+    .inp {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 9px 13px;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: var(--white);
+      transition: border-color .18s;
+    }
 
-        .cal-table td {
-            padding: 12px 14px;
-            border-bottom: 1px solid rgba(51,65,85,0.5);
-            vertical-align: middle;
-        }
+    .inp:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-glow); }
+    .inp::placeholder { color: var(--muted); }
 
-        .cal-table tr:hover td { background: rgba(18,165,148,0.05); }
+    textarea.inp { resize: vertical; line-height: 1.55; }
+    textarea.inp-content { min-height: 140px; }
+    textarea.inp-meta    { min-height: 66px; }
 
-        .status-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
+    select.inp { cursor: pointer; appearance: none; }
 
-        .status-pending   { background: rgba(245,158,11,0.15); color: #f59e0b; }
-        .status-generated { background: rgba(18,165,148,0.15); color: #12A594; }
-        .status-published { background: rgba(34,197,94,0.15);  color: #22c55e; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-        /* Add Topic Form */
-        .add-topic-panel {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 24px;
-            margin-bottom: 28px;
-            display: none;
-        }
+    /* Meta counter */
+    .meta-wrap { position: relative; }
 
-        .add-topic-panel.open { display: block; }
+    .char-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 5px;
+    }
 
-        .add-topic-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 14px;
-            margin-bottom: 18px;
-        }
+    .char-num { font-size: 11px; font-weight: 700; }
+    .char-num.good { color: var(--success); }
+    .char-num.warn { color: var(--warn); }
+    .char-num.bad  { color: var(--danger); }
 
-        /* ── Toast ── */
-        #toast {
-            visibility: hidden;
-            min-width: 240px;
-            background: var(--primary);
-            color: #fff;
-            text-align: center;
-            border-radius: 8px;
-            padding: 14px 20px;
-            position: fixed;
-            z-index: 999;
-            left: 50%;
-            bottom: 30px;
-            transform: translateX(-50%);
-            font-weight: 600;
-            font-size: 14px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            transition: opacity 0.3s;
-        }
+    .char-track {
+      height: 3px;
+      background: var(--border);
+      border-radius: 999px;
+      flex: 1;
+      margin-left: 10px;
+      overflow: hidden;
+    }
 
-        #toast.show { visibility: visible; animation: fadein 0.4s, fadeout 0.4s 2.6s; }
+    .char-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width .3s, background .3s;
+    }
 
-        @keyframes fadein  { from { opacity:0; bottom:20px; } to { opacity:1; bottom:30px; } }
-        @keyframes fadeout { from { opacity:1; bottom:30px; } to { opacity:0; bottom:20px; } }
+    /* Serp preview */
+    .serp-preview {
+      background: #fff;
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: none;
+      border: 1px solid var(--border);
+    }
 
-        .loading-text { color: var(--text-light); font-size: 16px; }
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
-        .empty-state svg { opacity: 0.3; margin-bottom: 12px; }
-    </style>
+    .serp-url   { font-size: 12px; color: #1a7f37; margin-bottom: 2px; }
+    .serp-title { font-size: 17px; color: #1a0dab; font-weight: 500; margin-bottom: 4px; line-height: 1.3; }
+    .serp-desc  { font-size: 13px; color: #4d5156; line-height: 1.5; }
+
+    /* Content preview modal */
+    .preview-wrap { display: none; }
+
+    .preview-box {
+      background: #fff;
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      color: #1b1b1b;
+      font-size: 14px;
+      line-height: 1.65;
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+
+    /* Card actions */
+    .cactions {
+      display: flex;
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+
+    .cactions .btn-teal { flex: 1; justify-content: center; }
+
+    .loading { opacity: .55; pointer-events: none; }
+
+    /* ══════════════════════════════════════════════
+       CONTENT CALENDAR
+    ══════════════════════════════════════════════ */
+    .cal-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .cal-hdr h2 { font-size: 17px; font-weight: 700; }
+
+    .add-form {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 24px;
+      display: none;
+      animation: slideDown .2s ease;
+    }
+
+    @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+
+    .add-form.on { display: block; }
+
+    .add-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .tbl-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+
+    table.ctbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .ctbl th {
+      text-align: left;
+      padding: 11px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--muted);
+    }
+
+    .ctbl td {
+      padding: 13px 16px;
+      border-bottom: 1px solid rgba(30,50,80,.6);
+      vertical-align: middle;
+    }
+
+    .ctbl tr:last-child td { border-bottom: none; }
+
+    .ctbl tr:hover td { background: rgba(18,165,148,.04); }
+
+    .chip {
+      display: inline-block;
+      padding: 3px 11px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .chip-pending   { background: rgba(245,158,11,.12); color: #f59e0b; }
+    .chip-generated { background: rgba(18,165,148,.12); color: var(--teal); }
+    .chip-published { background: rgba(34,197,94,.12);  color: var(--success); }
+
+    /* ══════════════════════════════════════════════
+       EMPTY / LOADING
+    ══════════════════════════════════════════════ */
+    .empty {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--muted);
+      font-size: 15px;
+      grid-column: 1 / -1;
+    }
+
+    .empty svg { opacity: .25; display: block; margin: 0 auto 16px; }
+
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border-2);
+      border-top-color: var(--teal);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 14px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ══════════════════════════════════════════════
+       TOAST
+    ══════════════════════════════════════════════ */
+    #toast {
+      visibility: hidden;
+      position: fixed;
+      left: 50%;
+      bottom: 32px;
+      transform: translateX(-50%);
+      background: var(--card);
+      border: 1px solid var(--teal);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 12px 22px;
+      border-radius: 999px;
+      z-index: 9999;
+      box-shadow: 0 4px 24px rgba(0,0,0,.5), 0 0 0 1px rgba(18,165,148,.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      visibility: visible;
+      animation: toastIn .35s ease, toastOut .35s ease 2.65s forwards;
+    }
+
+    @keyframes toastIn  { from { opacity:0; bottom:20px; } to { opacity:1; bottom:32px; } }
+    @keyframes toastOut { from { opacity:1; bottom:32px; } to { opacity:0; bottom:20px; } }
+
+    /* ══════════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════════ */
+    @media (max-width: 620px) {
+      body { padding: 16px 14px 60px; }
+      .blog-grid { grid-template-columns: 1fr; }
+      .row2 { grid-template-columns: 1fr; }
+      .hdr { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-    <header>
-        <img src="cropped-White.png" alt="Digitivia Logo" class="logo">
-        <div class="header-actions">
-            <button onclick="switchTab('drafts'); fetchDrafts();" class="btn btn-outline">↻ Refresh</button>
-        </div>
-    </header>
+<div class="wrap">
 
-    <!-- Tabs -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('drafts')">📝 Drafts</button>
-        <button class="tab-btn" onclick="switchTab('calendar')">📅 Content Calendar</button>
+  <!-- HEADER -->
+  <header class="hdr">
+    <img src="cropped-White.png" alt="Digitivia" class="logo">
+    <div class="stats-bar" id="stats-bar">
+      <div class="stat-pill">Drafts <span id="stat-drafts">—</span></div>
+      <div class="stat-pill">Topics <span id="stat-topics">—</span></div>
+      <div class="stat-pill">Published today <span id="stat-today">—</span></div>
+    </div>
+    <div class="hdr-right">
+      <button class="btn btn-ghost" onclick="refreshCurrent()">↻ Refresh</button>
+    </div>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" data-tab="drafts"   onclick="switchTab('drafts')">📝 Drafts</button>
+    <button class="tab"    data-tab="calendar" onclick="switchTab('calendar')">📅 Content Calendar</button>
+  </div>
+
+  <!-- ═══ DRAFTS PANEL ═══ -->
+  <div id="panel-drafts" class="panel on">
+    <div id="blog-grid" class="blog-grid">
+      <div class="empty"><div class="spinner"></div>Loading drafts…</div>
+    </div>
+  </div>
+
+  <!-- ═══ CALENDAR PANEL ═══ -->
+  <div id="panel-calendar" class="panel">
+
+    <div class="cal-hdr">
+      <h2>📅 Content Calendar</h2>
+      <button class="btn btn-teal" onclick="toggleAddForm()">+ Add Topic</button>
     </div>
 
-    <!-- DRAFTS TAB -->
-    <div id="tab-drafts" class="tab-panel active">
-        <div id="blog-grid" class="blog-grid">
-            <p class="loading-text">Loading drafts...</p>
+    <!-- Add form -->
+    <div id="add-form" class="add-form">
+      <div class="add-grid">
+        <div>
+          <label class="lbl">Topic Title *</label>
+          <input id="nw-topic" class="inp" placeholder="e.g. AI Chatbots for Saudi Banks">
         </div>
+        <div>
+          <label class="lbl">Focus Keyword *</label>
+          <input id="nw-kw" class="inp" placeholder="e.g. AI chatbots Saudi Arabia">
+        </div>
+        <div>
+          <label class="lbl">Country</label>
+          <select id="nw-country" class="inp">
+            <option>UAE</option><option>Saudi Arabia</option><option>Egypt</option>
+            <option>Qatar</option><option>Kuwait</option><option>Bahrain</option>
+            <option>Oman</option><option>Jordan</option><option>Lebanon</option><option>Global</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Industry</label>
+          <input id="nw-industry" class="inp" placeholder="e.g. banking, retail, real estate">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-teal" onclick="addTopic()">Save Topic</button>
+        <button class="btn btn-ghost" onclick="toggleAddForm()">Cancel</button>
+      </div>
     </div>
 
-    <!-- CONTENT CALENDAR TAB -->
-    <div id="tab-calendar" class="tab-panel">
-        <div class="calendar-header">
-            <h2 style="margin:0;font-size:18px;">Content Calendar</h2>
-            <button class="btn btn-primary" onclick="toggleAddForm()">+ Add Topic</button>
-        </div>
-
-        <!-- Add Topic Form -->
-        <div id="add-topic-panel" class="add-topic-panel">
-            <div class="add-topic-grid">
-                <div>
-                    <span class="label">Topic</span>
-                    <input type="text" id="new-topic" class="edit-input" placeholder="e.g. AI Chatbots for Saudi Banks">
-                </div>
-                <div>
-                    <span class="label">Focus Keyword</span>
-                    <input type="text" id="new-keyword" class="edit-input" placeholder="e.g. AI chatbots Saudi Arabia">
-                </div>
-                <div>
-                    <span class="label">Country</span>
-                    <select id="new-country" class="edit-input">
-                        <option value="UAE">UAE</option>
-                        <option value="Saudi Arabia">Saudi Arabia</option>
-                        <option value="Egypt">Egypt</option>
-                        <option value="Qatar">Qatar</option>
-                        <option value="Kuwait">Kuwait</option>
-                        <option value="Bahrain">Bahrain</option>
-                        <option value="Oman">Oman</option>
-                        <option value="Jordan">Jordan</option>
-                        <option value="Lebanon">Lebanon</option>
-                        <option value="Global">Global</option>
-                    </select>
-                </div>
-                <div>
-                    <span class="label">Industry</span>
-                    <input type="text" id="new-industry" class="edit-input" placeholder="e.g. banking, retail, real estate">
-                </div>
-            </div>
-            <div style="display:flex;gap:10px;">
-                <button class="btn btn-primary" onclick="addTopic()">Save Topic</button>
-                <button class="btn btn-outline" onclick="toggleAddForm()">Cancel</button>
-            </div>
-        </div>
-
-        <div style="overflow-x:auto;">
-            <table class="cal-table">
-                <thead>
-                    <tr>
-                        <th>Topic</th>
-                        <th>Focus Keyword</th>
-                        <th>Country</th>
-                        <th>Industry</th>
-                        <th>Status</th>
-                        <th>Added</th>
-                    </tr>
-                </thead>
-                <tbody id="calendar-body">
-                    <tr><td colspan="6" style="color:var(--text-light);text-align:center;padding:40px;">Loading topics...</td></tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="tbl-wrap">
+      <table class="ctbl">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Topic</th>
+            <th>Focus Keyword</th>
+            <th>Country</th>
+            <th>Industry</th>
+            <th>Status</th>
+            <th>Added</th>
+          </tr>
+        </thead>
+        <tbody id="cal-body">
+          <tr><td colspan="7" style="text-align:center;padding:50px;color:var(--muted);">
+            <div class="spinner" style="width:24px;height:24px;border-width:2px;"></div>
+          </td></tr>
+        </tbody>
+      </table>
     </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<!-- TOAST -->
+<div id="toast">✓ Done</div>
+
+<!-- SERP PREVIEW MODAL -->
+<div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:800;align-items:center;justify-content:center;padding:20px;" onclick="closeModal()">
+  <div id="modal-box" style="background:var(--card);border:1px solid var(--border-2);border-radius:var(--radius);max-width:860px;width:100%;max-height:90vh;overflow-y:auto;padding:28px;position:relative;" onclick="event.stopPropagation()">
+    <button onclick="closeModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;">✕</button>
+    <div id="modal-content"></div>
+  </div>
 </div>
 
-<div id="toast">Published Successfully!</div>
-
 <script>
-    const N8N_WEBHOOK_URL = 'https://n8n.srv1174105.hstgr.cloud/webhook/blog-dashboard';
-    const N8N_API_URL     = 'https://n8n.srv1174105.hstgr.cloud/api/v1';
-    const N8N_API_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxYjc0ZTE1MC0xNGYwLTRjZTQtYmVhNi1mYzRjNzg1MmM5NDMiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiNTM3OTIzN2EtZTMwNy00MTNhLTg2ODUtMWUyMjBhOWMwOGU4IiwiaWF0IjoxNzc4MTEwMzM2fQ.S_WVMEpQ3oLlhXuWyIWh1JZl405sRwhzUsTKAVbn8n';
-    const CALENDAR_TABLE_ID = 'vhxlvCkJwerP2O0c';
+/* ════════════════════════════════════════
+   CONFIG
+════════════════════════════════════════ */
+const WH       = 'https://n8n.srv1174105.hstgr.cloud/webhook/blog-dashboard';
+const WH_CAL   = 'https://n8n.srv1174105.hstgr.cloud/webhook/blog-calendar';
+const SITE_URL = 'https://digitivia.com';
 
-    // ── Tab switching ──
-    function switchTab(name) {
-        document.querySelectorAll('.tab-btn').forEach((b, i) => {
-            b.classList.toggle('active', ['drafts','calendar'][i] === name);
-        });
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        document.getElementById('tab-' + name).classList.add('active');
-        if (name === 'calendar') fetchCalendar();
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+let _tab = 'drafts';
+let _drafts = [];
+let _topics = [];
+
+/* ════════════════════════════════════════
+   TABS
+════════════════════════════════════════ */
+function switchTab(name) {
+  _tab = name;
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.getElementById('panel-' + name).classList.add('on');
+  if (name === 'calendar') fetchCalendar();
+}
+
+function refreshCurrent() {
+  if (_tab === 'drafts') fetchDrafts();
+  else fetchCalendar();
+}
+
+/* ════════════════════════════════════════
+   STATS BAR
+════════════════════════════════════════ */
+function updateStats() {
+  document.getElementById('stat-drafts').textContent = _drafts.length;
+  document.getElementById('stat-topics').textContent = _topics.filter(t => t.status === 'pending').length + ' pending';
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById('stat-today').textContent = _topics.filter(t =>
+    t.status === 'published' && (t.published_at || '').startsWith(today)
+  ).length;
+}
+
+/* ════════════════════════════════════════
+   FETCH DRAFTS
+════════════════════════════════════════ */
+async function fetchDrafts() {
+  const grid = document.getElementById('blog-grid');
+  grid.innerHTML = '<div class="empty"><div class="spinner"></div>Loading drafts…</div>';
+  try {
+    const res = await fetch(WH, { method: 'GET' });
+    let data = await res.json();
+    if (!Array.isArray(data)) data = [data];
+    _drafts = data.filter(d => d && d.id);
+    updateStats();
+    renderDrafts();
+  } catch (e) {
+    console.error(e);
+    grid.innerHTML = '<div class="empty" style="color:var(--danger);">⚠ Could not reach n8n. Check that the workflow is active.</div>';
+  }
+}
+
+function renderDrafts() {
+  const grid = document.getElementById('blog-grid');
+  grid.innerHTML = '';
+  if (_drafts.length === 0) {
+    grid.innerHTML = '<div class="empty"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>No drafts pending review. The AI will generate the next one at 2 PM Cairo time.</div>';
+    return;
+  }
+  _drafts.forEach(post => grid.appendChild(buildCard(post)));
+}
+
+/* ════════════════════════════════════════
+   BUILD CARD
+════════════════════════════════════════ */
+function buildCard(post) {
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.id = 'card-' + post.id;
+
+  const hasImg = post.image_url && post.image_url.trim();
+  const thumbHtml = hasImg
+    ? `<div class="thumb" style="background-image:url('${esc(post.image_url)}')">
+         <div class="thumb-overlay"></div>
+         <div class="thumb-badges">
+           ${post.country   ? `<span class="badge badge-teal">${esc(post.country)}</span>` : ''}
+           ${post.category  ? `<span class="badge badge-white">${esc(post.category)}</span>` : ''}
+         </div>
+       </div>`
+    : `<div class="thumb">
+         <div class="no-img">
+           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+           No featured image
+         </div>
+       </div>`;
+
+  const metaLen = (post.meta_desc || '').length;
+  const metaClass = metaLen >= 140 && metaLen <= 158 ? 'good' : 'warn';
+
+  const seoScore = computeSEOScore(post);
+
+  const countries = ['UAE','Saudi Arabia','Egypt','Qatar','Kuwait','Bahrain','Oman','Jordan','Lebanon','Global'];
+  const categories = ['Digital Marketing','AI & Automation','SEO','Social Media','E-Commerce','Business Strategy','Technology'];
+
+  div.innerHTML = `
+    ${thumbHtml}
+    <div class="cbody">
+
+      <!-- SEO Score Bar -->
+      <div class="seo-bar" title="Live SEO quality indicators">
+        <span class="seo-label">SEO</span>
+        <div class="seo-pills" id="seo-${post.id}">
+          ${renderSEOPills(seoScore)}
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div>
+        <label class="lbl">Title</label>
+        <input class="inp title-inp" value="${esc(post.title || '')}" oninput="refreshSEO('${post.id}')">
+      </div>
+
+      <!-- Keyword + Country -->
+      <div class="row2">
+        <div>
+          <label class="lbl">Focus Keyword</label>
+          <input class="inp kw-inp" value="${esc(post.focus_keyword || '')}" placeholder="main SEO keyword" oninput="refreshSEO('${post.id}')">
+        </div>
+        <div>
+          <label class="lbl">Country</label>
+          <select class="inp country-inp">
+            ${countries.map(c => `<option${c === (post.country||'UAE') ? ' selected' : ''}>${c}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <!-- Category + Tags -->
+      <div class="row2">
+        <div>
+          <label class="lbl">Category</label>
+          <select class="inp cat-inp">
+            ${categories.map(c => `<option${c === (post.category||'Digital Marketing') ? ' selected' : ''}>${c}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Tags</label>
+          <input class="inp tags-inp" value="${esc(post.tags || '')}" placeholder="tag1, tag2, tag3">
+        </div>
+      </div>
+
+      <!-- Meta description -->
+      <div>
+        <label class="lbl">Meta Description <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;">(ideal: 140–158 chars)</span></label>
+        <div class="meta-wrap">
+          <textarea class="inp inp-meta meta-inp" oninput="updateCounter(this,'${post.id}'); refreshSEO('${post.id}')">${esc(post.meta_desc || '')}</textarea>
+          <div class="char-bar">
+            <span class="char-num ${metaClass}" id="cn-${post.id}">${metaLen}</span>
+            <div class="char-track"><div class="char-fill" id="cf-${post.id}" style="${metaFill(metaLen)}"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Google SERP preview toggle -->
+      <div>
+        <button class="btn btn-ghost btn-sm" onclick="toggleSerp(this,'${post.id}')">🔍 Google Preview</button>
+        <div class="serp-preview" id="serp-${post.id}"></div>
+      </div>
+
+      <!-- Content -->
+      <div>
+        <label class="lbl">Content (HTML)</label>
+        <textarea class="inp inp-content content-inp">${esc(post.content || '')}</textarea>
+      </div>
+
+      <!-- Content preview -->
+      <div class="preview-wrap" id="pw-${post.id}">
+        <div class="preview-box" id="pb-${post.id}"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="cactions">
+        <button class="btn btn-ghost btn-sm" onclick="openPreview('${post.id}')">👁 Preview</button>
+        <button class="btn btn-teal" onclick="publishPost('${post.id}','${esc(post.image_url||'')}')">
+          ✓ Approve &amp; Publish
+        </button>
+      </div>
+    </div>`;
+
+  return div;
+}
+
+/* ════════════════════════════════════════
+   SEO SCORE
+════════════════════════════════════════ */
+function computeSEOScore(post) {
+  const title   = (post.title   || (post.title_inp   && post.title_inp.value)   || '').toLowerCase();
+  const kw      = (post.focus_keyword || '').toLowerCase();
+  const meta    = (post.meta_desc || '').toLowerCase();
+  const content = (post.content || '').toLowerCase();
+  const metaLen = (post.meta_desc || '').length;
+
+  return {
+    kwInTitle:   kw && title.includes(kw.split(' ')[0]),
+    metaLen:     metaLen >= 140 && metaLen <= 158,
+    kwInMeta:    kw && meta.includes(kw.split(' ')[0]),
+    hasSchema:   !!(post.schema_json && post.schema_json.length > 5),
+    hasImg:      !!(post.image_url && post.image_url.trim()),
+    wordCount:   (content.replace(/<[^>]+>/g, ' ').trim().split(/\s+/).filter(Boolean).length >= 900)
+  };
+}
+
+function refreshSEO(id) {
+  const card = document.getElementById('card-' + id);
+  if (!card) return;
+  const post = {
+    title: card.querySelector('.title-inp').value,
+    focus_keyword: card.querySelector('.kw-inp').value,
+    meta_desc: card.querySelector('.meta-inp').value,
+    content: card.querySelector('.content-inp').value,
+    schema_json: '[]',
+    image_url: ''
+  };
+  const score = computeSEOScore(post);
+  document.getElementById('seo-' + id).innerHTML = renderSEOPills(score);
+  updateSerpBox(id);
+}
+
+function renderSEOPills(s) {
+  const pills = [
+    [s.kwInTitle,  'KW in title'],
+    [s.metaLen,    'Meta length'],
+    [s.kwInMeta,   'KW in meta'],
+    [s.hasSchema,  'Schema'],
+    [s.hasImg,     'Image'],
+    [s.wordCount,  '900+ words']
+  ];
+  return pills.map(([ok, label]) =>
+    `<span class="seo-pill ${ok ? 'seo-good' : 'seo-warn'}">${ok ? '✓' : '!'} ${label}</span>`
+  ).join('');
+}
+
+/* ════════════════════════════════════════
+   META COUNTER
+════════════════════════════════════════ */
+function updateCounter(el, id) {
+  const len = el.value.length;
+  const cn  = document.getElementById('cn-' + id);
+  const cf  = document.getElementById('cf-' + id);
+  if (!cn) return;
+  cn.textContent = len;
+  cn.className = 'char-num ' + (len >= 140 && len <= 158 ? 'good' : len > 0 && len < 140 ? 'warn' : len > 158 ? 'bad' : 'warn');
+  cf.style.cssText = metaFill(len);
+}
+
+function metaFill(len) {
+  const pct = Math.min(100, Math.round((len / 158) * 100));
+  const col = len >= 140 && len <= 158 ? '#22c55e' : len > 158 ? '#ef4444' : '#f59e0b';
+  return `width:${pct}%;background:${col};`;
+}
+
+/* ════════════════════════════════════════
+   SERP PREVIEW
+════════════════════════════════════════ */
+function toggleSerp(btn, id) {
+  const box = document.getElementById('serp-' + id);
+  const open = box.style.display === 'block';
+  box.style.display = open ? 'none' : 'block';
+  btn.textContent = open ? '🔍 Google Preview' : '✕ Hide Preview';
+  if (!open) updateSerpBox(id);
+}
+
+function updateSerpBox(id) {
+  const box = document.getElementById('serp-' + id);
+  if (!box || box.style.display !== 'block') return;
+  const card = document.getElementById('card-' + id);
+  const title = esc(card.querySelector('.title-inp').value || 'Blog Title');
+  const meta  = esc(card.querySelector('.meta-inp').value  || 'Meta description will appear here.');
+  box.innerHTML = `
+    <div class="serp-url">${SITE_URL}/blog/ › article-title</div>
+    <div class="serp-title">${title} - Digitivia</div>
+    <div class="serp-desc">${meta}</div>`;
+}
+
+/* ════════════════════════════════════════
+   CONTENT PREVIEW
+════════════════════════════════════════ */
+function openPreview(id) {
+  const card    = document.getElementById('card-' + id);
+  const content = card.querySelector('.content-inp').value;
+  const title   = card.querySelector('.title-inp').value;
+  const meta    = card.querySelector('.meta-inp').value;
+  const modal   = document.getElementById('modal-content');
+  modal.innerHTML = `
+    <h2 style="font-size:20px;margin-bottom:10px;">${esc(title)}</h2>
+    <p style="color:var(--muted);font-size:12px;margin-bottom:20px;">${esc(meta)}</p>
+    <div style="background:#fff;border-radius:10px;padding:24px;color:#1b1b1b;font-size:15px;line-height:1.7;">${content}</div>`;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+}
+
+/* ════════════════════════════════════════
+   PUBLISH
+════════════════════════════════════════ */
+async function publishPost(id, imgUrl) {
+  const card = document.getElementById('card-' + id);
+  const btn  = card.querySelector('.btn-teal');
+
+  const title   = card.querySelector('.title-inp').value.trim();
+  const content = card.querySelector('.content-inp').value.trim();
+  const meta    = card.querySelector('.meta-inp').value.trim();
+  const kw      = card.querySelector('.kw-inp').value.trim();
+  const cat     = card.querySelector('.cat-inp').value;
+  const tags    = card.querySelector('.tags-inp').value.trim();
+  const country = card.querySelector('.country-inp').value;
+
+  if (!title)   { alert('Title is required.'); return; }
+  if (!content) { alert('Content is required.'); return; }
+
+  card.classList.add('loading');
+  btn.textContent = 'Publishing…';
+  btn.disabled = true;
+
+  const draft = _drafts.find(d => String(d.id) === String(id)) || {};
+
+  const payload = {
+    id,
+    new_title:     title,
+    new_content:   content,
+    excerpt:       meta,
+    image_url:     imgUrl,
+    focus_keyword: kw,
+    category:      cat,
+    tags,
+    country,
+    schema_json:   draft.schema_json || '',
+    alt_text:      draft.alt_text    || ''
+  };
+
+  try {
+    const res = await fetch(WH, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload)
+    });
+    if (res.ok) {
+      card.style.transform = 'scale(.93)';
+      card.style.opacity   = '0';
+      setTimeout(() => {
+        card.remove();
+        _drafts = _drafts.filter(d => String(d.id) !== String(id));
+        updateStats();
+        if (_drafts.length === 0) renderDrafts();
+      }, 320);
+      toast('🚀 Published to WordPress!');
+    } else {
+      const err = await res.text();
+      alert('Publish failed: ' + err);
+      card.classList.remove('loading');
+      btn.textContent = '✓ Approve & Publish';
+      btn.disabled = false;
     }
+  } catch (e) {
+    console.error(e);
+    alert('Network error — check console.');
+    card.classList.remove('loading');
+    btn.textContent = '✓ Approve & Publish';
+    btn.disabled = false;
+  }
+}
 
-    // ── DRAFTS ──
-    async function fetchDrafts() {
-        const grid = document.getElementById('blog-grid');
-        grid.innerHTML = '<p class="loading-text">Loading drafts...</p>';
-        try {
-            const res = await fetch(N8N_WEBHOOK_URL, { method: 'GET' });
-            let data = await res.json();
-            if (!Array.isArray(data)) data = [data];
-            grid.innerHTML = '';
-            if (data.length === 0 || (data.length === 1 && !data[0].id)) {
-                grid.innerHTML = '<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>No drafts pending review.</p></div>';
-                return;
-            }
-            data.forEach(post => { if (post && post.id) grid.appendChild(createCard(post)); });
-        } catch (e) {
-            console.error(e);
-            grid.innerHTML = '<p style="color:#ef4444;">Error connecting to n8n. Check console.</p>';
-        }
-    }
+/* ════════════════════════════════════════
+   CONTENT CALENDAR
+════════════════════════════════════════ */
+async function fetchCalendar() {
+  const tbody = document.getElementById('cal-body');
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:50px;"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin:0 auto;"></div></td></tr>';
+  try {
+    const res = await fetch(WH_CAL, { method: 'GET' });
+    let data = await res.json();
+    if (!Array.isArray(data)) data = [data];
+    _topics = data.filter(t => t && (t.topic || t.id));
+    updateStats();
+    renderCalendar();
+  } catch (e) {
+    console.error(e);
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--danger);">⚠ Could not load calendar. Check n8n workflow is active.</td></tr>';
+  }
+}
 
-    function createCard(post) {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.id = `card-${post.id}`;
+function renderCalendar() {
+  const tbody = document.getElementById('cal-body');
+  if (_topics.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:60px;color:var(--muted);">No topics yet. Click "+ Add Topic" to get started.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = _topics.map((row, i) => `
+    <tr>
+      <td style="color:var(--muted);font-size:12px;">${i + 1}</td>
+      <td style="font-weight:600;max-width:260px;">${esc(row.topic || '—')}</td>
+      <td style="color:var(--teal);font-size:12px;">${esc(row.focus_keyword || '—')}</td>
+      <td>${esc(row.country || '—')}</td>
+      <td style="color:var(--muted);">${esc(row.industry || '—')}</td>
+      <td><span class="chip chip-${row.status || 'pending'}">${row.status || 'pending'}</span></td>
+      <td style="color:var(--muted);font-size:12px;">${row.createdAt ? new Date(row.createdAt).toLocaleDateString('en-GB') : '—'}</td>
+    </tr>`).join('');
+}
 
-        const imageHtml = (post.image_url && post.image_url.trim())
-            ? `<div class="card-image" style="background-image:url('${escHtml(post.image_url)}')">
-                 ${post.country ? `<span class="country-badge">${escHtml(post.country)}</span>` : ''}
-               </div>`
-            : `<div class="card-image"><div class="no-image-placeholder">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                 No Image
-               </div></div>`;
+function toggleAddForm() {
+  document.getElementById('add-form').classList.toggle('on');
+}
 
-        const metaVal = escHtml(post.meta_desc || '');
-        const metaLen = (post.meta_desc || '').length;
-        const metaClass = metaLen >= 140 && metaLen <= 158 ? 'good' : metaLen > 0 && metaLen < 140 ? 'warn' : metaLen > 158 ? 'bad' : 'warn';
+async function addTopic() {
+  const topic    = document.getElementById('nw-topic').value.trim();
+  const kw       = document.getElementById('nw-kw').value.trim();
+  const country  = document.getElementById('nw-country').value;
+  const industry = document.getElementById('nw-industry').value.trim();
+  if (!topic || !kw) { alert('Topic and Focus Keyword are required.'); return; }
 
-        div.innerHTML = `
-            ${imageHtml}
-            <div class="card-body">
-                <div>
-                    <span class="label">Title</span>
-                    <input type="text" class="edit-input title-input" value="${escHtml(post.title || '')}">
-                </div>
-                <div class="field-row">
-                    <div>
-                        <span class="label">Focus Keyword</span>
-                        <input type="text" class="edit-input kw-input" value="${escHtml(post.focus_keyword || '')}">
-                    </div>
-                    <div>
-                        <span class="label">Country</span>
-                        <select class="edit-input country-input">
-                            ${['UAE','Saudi Arabia','Egypt','Qatar','Kuwait','Bahrain','Oman','Jordan','Lebanon','Global'].map(c =>
-                                `<option value="${c}" ${c === (post.country||'UAE') ? 'selected' : ''}>${c}</option>`
-                            ).join('')}
-                        </select>
-                    </div>
-                </div>
-                <div class="field-row">
-                    <div>
-                        <span class="label">Category</span>
-                        <select class="edit-input cat-input">
-                            ${['Digital Marketing','AI & Automation','SEO','Social Media','E-Commerce','Business Strategy','Technology'].map(c =>
-                                `<option value="${c}" ${c === (post.category||'Digital Marketing') ? 'selected' : ''}>${c}</option>`
-                            ).join('')}
-                        </select>
-                    </div>
-                    <div>
-                        <span class="label">Tags</span>
-                        <input type="text" class="edit-input tags-input" placeholder="tag1, tag2, tag3" value="${escHtml(post.tags || '')}">
-                    </div>
-                </div>
-                <div>
-                    <span class="label">Meta Description <span style="font-weight:400;text-transform:none;letter-spacing:0;">(140–158 chars)</span></span>
-                    <div class="meta-wrapper">
-                        <textarea class="edit-input meta-input" oninput="updateCharCount(this)">${metaVal}</textarea>
-                        <div class="char-count ${metaClass}" id="cc-${post.id}">${metaLen} / 158</div>
-                    </div>
-                </div>
-                <div>
-                    <span class="label">Content (HTML)</span>
-                    <textarea class="edit-input content-input">${escHtml(post.content || '')}</textarea>
-                </div>
-                <div>
-                    <button class="btn btn-outline btn-sm" onclick="togglePreview(this, '${post.id}')">👁 Preview</button>
-                    <div class="preview-box" id="preview-${post.id}"></div>
-                </div>
-                <div class="card-actions">
-                    <button class="btn btn-primary" style="flex:1;" onclick="publishPost('${post.id}', '${escHtml(post.image_url || '')}', '${escHtml(post.schema_json ? post.schema_json.replace(/'/g,'') : '')}')">
-                        ✓ Approve &amp; Publish
-                    </button>
-                </div>
-            </div>`;
-        return div;
-    }
+  const btn = document.querySelector('#add-form .btn-teal');
+  btn.textContent = 'Saving…';
+  btn.disabled = true;
 
-    function updateCharCount(textarea) {
-        const len = textarea.value.length;
-        const card = textarea.closest('.card');
-        const id = card.id.replace('card-','');
-        const el = document.getElementById('cc-' + id);
-        if (!el) return;
-        el.textContent = len + ' / 158';
-        el.className = 'char-count ' + (len >= 140 && len <= 158 ? 'good' : len > 0 && len < 140 ? 'warn' : len > 158 ? 'bad' : 'warn');
-    }
+  try {
+    const res = await fetch(WH_CAL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ topic, focus_keyword: kw, country, industry, status: 'pending' })
+    });
+    if (!res.ok) throw new Error(res.status);
+    ['nw-topic','nw-kw','nw-industry'].forEach(id => document.getElementById(id).value = '');
+    toggleAddForm();
+    toast('✓ Topic added to calendar!');
+    fetchCalendar();
+  } catch (e) {
+    console.error(e);
+    alert('Failed to add topic: ' + e.message);
+  } finally {
+    btn.textContent = 'Save Topic';
+    btn.disabled = false;
+  }
+}
 
-    function togglePreview(btn, id) {
-        const card = document.getElementById('card-' + id);
-        const box = document.getElementById('preview-' + id);
-        const content = card.querySelector('.content-input').value;
-        if (box.style.display === 'block') {
-            box.style.display = 'none';
-            btn.textContent = '👁 Preview';
-        } else {
-            box.innerHTML = content;
-            box.style.display = 'block';
-            btn.textContent = '✕ Close Preview';
-        }
-    }
+/* ════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════ */
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/"/g,'&quot;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
 
-    async function publishPost(id, imageUrl, schemaJson) {
-        const card = document.getElementById(`card-${id}`);
-        const title = card.querySelector('.title-input').value;
-        const content = card.querySelector('.content-input').value;
-        const metaDesc = card.querySelector('.meta-input').value;
-        const focusKeyword = card.querySelector('.kw-input').value;
-        const category = card.querySelector('.cat-input').value;
-        const tags = card.querySelector('.tags-input').value;
-        const country = card.querySelector('.country-input').value;
-        const btn = card.querySelector('.btn-primary');
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show';
+  setTimeout(() => { t.className = ''; }, 3000);
+}
 
-        card.classList.add('loading');
-        btn.textContent = 'Publishing…';
-        btn.disabled = true;
-
-        const payload = {
-            id, new_title: title, new_content: content,
-            excerpt: metaDesc, image_url: imageUrl,
-            focus_keyword: focusKeyword, category, tags,
-            country, schema_json: schemaJson || ''
-        };
-
-        try {
-            const res = await fetch(N8N_WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            if (res.ok) {
-                card.style.transform = 'scale(0.92)';
-                card.style.opacity = '0';
-                setTimeout(() => card.remove(), 300);
-                showToast('Published to WordPress! 🚀');
-            } else {
-                const err = await res.text();
-                alert('Failed to publish: ' + err);
-                resetCard(card, btn);
-            }
-        } catch (e) {
-            console.error(e);
-            alert('Network error. See console.');
-            resetCard(card, btn);
-        }
-    }
-
-    function resetCard(card, btn) {
-        card.classList.remove('loading');
-        btn.textContent = '✓ Approve & Publish';
-        btn.disabled = false;
-    }
-
-    // ── CONTENT CALENDAR ──
-    async function fetchCalendar() {
-        const tbody = document.getElementById('calendar-body');
-        tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-light);text-align:center;padding:40px;">Loading…</td></tr>';
-        try {
-            const res = await fetch(`${N8N_API_URL}/data-tables/${CALENDAR_TABLE_ID}/rows`, {
-                headers: { 'X-N8N-API-KEY': N8N_API_KEY }
-            });
-            if (!res.ok) throw new Error(res.status);
-            const { data } = await res.json();
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-light);text-align:center;padding:40px;">No topics yet. Add one above.</td></tr>';
-                return;
-            }
-            tbody.innerHTML = data.map(row => `
-                <tr>
-                    <td style="font-weight:500;">${escHtml(row.topic || '')}</td>
-                    <td style="color:var(--text-light);">${escHtml(row.focus_keyword || '')}</td>
-                    <td>${escHtml(row.country || '')}</td>
-                    <td style="color:var(--text-light);">${escHtml(row.industry || '')}</td>
-                    <td><span class="status-badge status-${row.status || 'pending'}">${row.status || 'pending'}</span></td>
-                    <td style="color:var(--text-light);font-size:12px;">${row.createdAt ? new Date(row.createdAt).toLocaleDateString() : '—'}</td>
-                </tr>`).join('');
-        } catch (e) {
-            console.error(e);
-            tbody.innerHTML = '<tr><td colspan="6" style="color:#ef4444;text-align:center;padding:20px;">Error loading calendar.</td></tr>';
-        }
-    }
-
-    function toggleAddForm() {
-        const panel = document.getElementById('add-topic-panel');
-        panel.classList.toggle('open');
-    }
-
-    async function addTopic() {
-        const topic    = document.getElementById('new-topic').value.trim();
-        const keyword  = document.getElementById('new-keyword').value.trim();
-        const country  = document.getElementById('new-country').value;
-        const industry = document.getElementById('new-industry').value.trim();
-        if (!topic || !keyword) { alert('Topic and Focus Keyword are required.'); return; }
-
-        try {
-            const res = await fetch(`${N8N_API_URL}/data-tables/${CALENDAR_TABLE_ID}/rows`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-N8N-API-KEY': N8N_API_KEY },
-                body: JSON.stringify({ data: [{ topic, focus_keyword: keyword, country, industry, status: 'pending' }] })
-            });
-            if (!res.ok) throw new Error(res.status);
-            ['new-topic','new-keyword','new-industry'].forEach(id => document.getElementById(id).value = '');
-            toggleAddForm();
-            showToast('Topic added to calendar!');
-            fetchCalendar();
-        } catch (e) {
-            console.error(e);
-            alert('Failed to add topic: ' + e.message);
-        }
-    }
-
-    // ── Utilities ──
-    function escHtml(str) {
-        return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.className = 'show';
-        setTimeout(() => { t.className = t.className.replace('show',''); }, 3000);
-    }
-
-    // Init
-    fetchDrafts();
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+fetchDrafts();
 </script>
 </body>
 </html>
