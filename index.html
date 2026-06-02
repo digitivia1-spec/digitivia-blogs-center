@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Digitivia Blog Publishing Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digitivia SEO/GEO/AEO Blog Intelligence Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
-    /* ══════════════════════════════════════════════
-       RESET & TOKENS
-    ══════════════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --bg:        #07111f;
       --surface:   #0f1f35;
+      --surface-2: #102742;
       --card:      #152032;
       --card-hover:#1a2a3f;
       --border:    #1e3250;
@@ -24,10 +22,13 @@
       --teal-dk:   #0d8a7a;
       --teal-glow: rgba(18,165,148,.18);
       --white:     #f0f6ff;
-      --muted:     #6b8099;
+      --muted:     #7b91aa;
+      --muted-2:   #a9b7c6;
       --danger:    #ef4444;
       --warn:      #f59e0b;
       --success:   #22c55e;
+      --blue:      #60a5fa;
+      --purple:    #a78bfa;
       --radius:    14px;
       --radius-sm: 8px;
       --shadow:    0 8px 32px rgba(0,0,0,.45);
@@ -36,72 +37,98 @@
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
+      font-family: 'Inter', 'Noto Kufi Arabic', system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(18,165,148,.13), transparent 36%),
+        radial-gradient(circle at bottom right, rgba(96,165,250,.10), transparent 32%),
+        var(--bg);
       color: var(--white);
       min-height: 100vh;
       padding: 28px 24px 80px;
     }
 
-    /* ══════════════════════════════════════════════
-       LAYOUT
-    ══════════════════════════════════════════════ */
-    .wrap { max-width: 1380px; margin: 0 auto; }
+    .wrap { max-width: 1480px; margin: 0 auto; }
 
-    /* ══════════════════════════════════════════════
-       HEADER
-    ══════════════════════════════════════════════ */
     .hdr {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding-bottom: 24px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       gap: 16px;
       flex-wrap: wrap;
     }
 
     .logo { height: 46px; width: auto; }
-
-    .hdr-right { display: flex; gap: 10px; align-items: center; }
+    .hdr-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
     .stats-bar {
       display: flex;
-      gap: 20px;
+      gap: 12px;
       align-items: center;
       flex-wrap: wrap;
     }
 
     .stat-pill {
-      background: var(--surface);
+      background: rgba(15,31,53,.82);
       border: 1px solid var(--border);
       border-radius: 999px;
-      padding: 5px 14px;
+      padding: 7px 14px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--muted);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
     }
 
     .stat-pill span { color: var(--white); font-size: 13px; }
 
-    /* ══════════════════════════════════════════════
-       TABS
-    ══════════════════════════════════════════════ */
+    .intelligence-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(190px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .intel-card {
+      background: linear-gradient(145deg, rgba(21,32,50,.98), rgba(15,31,53,.92));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intel-card::after {
+      content: "";
+      position: absolute;
+      right: -38px;
+      top: -38px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: rgba(18,165,148,.09);
+    }
+
+    .intel-k { font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 800; }
+    .intel-v { margin-top: 7px; font-size: 24px; font-weight: 800; color: var(--white); }
+    .intel-s { margin-top: 4px; font-size: 12px; color: var(--muted-2); line-height: 1.45; }
+
     .tabs {
       display: flex;
       gap: 2px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 30px;
+      margin-bottom: 28px;
+      overflow-x: auto;
     }
 
     .tab {
       padding: 11px 24px;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--muted);
       background: none;
       border: none;
@@ -110,6 +137,7 @@
       transition: color .2s, border-color .2s;
       margin-bottom: -1px;
       letter-spacing: .01em;
+      white-space: nowrap;
     }
 
     .tab:hover { color: var(--white); }
@@ -118,37 +146,33 @@
     .panel { display: none; }
     .panel.on { display: block; }
 
-    /* ══════════════════════════════════════════════
-       BUTTONS
-    ══════════════════════════════════════════════ */
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      gap: 7px;
       padding: 9px 18px;
       border-radius: var(--radius-sm);
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       border: none;
       transition: all .18s;
       letter-spacing: .01em;
       white-space: nowrap;
+      font-family: inherit;
     }
 
     .btn-ghost {
       background: transparent;
-      color: var(--muted);
+      color: var(--muted-2);
       border: 1px solid var(--border-2);
     }
     .btn-ghost:hover { background: var(--surface); color: var(--white); }
 
-    .btn-teal {
-      background: var(--teal);
-      color: #fff;
-    }
+    .btn-teal { background: var(--teal); color: #fff; }
     .btn-teal:hover { background: var(--teal-dk); }
-    .btn-teal:disabled { background: var(--border-2); color: var(--muted); cursor: not-allowed; }
+    .btn-teal:disabled, .btn-ghost:disabled { background: var(--border-2); color: var(--muted); cursor: not-allowed; border-color: var(--border-2); }
 
     .btn-danger-outline {
       background: transparent;
@@ -159,20 +183,14 @@
 
     .btn-sm { padding: 6px 13px; font-size: 12px; }
 
-    /* ══════════════════════════════════════════════
-       BLOG GRID
-    ══════════════════════════════════════════════ */
     .blog-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
       gap: 24px;
     }
 
-    /* ══════════════════════════════════════════════
-       CARD
-    ══════════════════════════════════════════════ */
     .card {
-      background: var(--card);
+      background: rgba(21,32,50,.98);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
@@ -182,12 +200,8 @@
       transition: transform .22s, border-color .22s, opacity .3s;
     }
 
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: var(--border-2);
-    }
+    .card:hover { transform: translateY(-4px); border-color: var(--border-2); }
 
-    /* Thumbnail */
     .thumb {
       height: 210px;
       background: var(--surface);
@@ -201,7 +215,7 @@
     .thumb-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to bottom, transparent 50%, rgba(7,17,31,.8) 100%);
+      background: linear-gradient(to bottom, transparent 45%, rgba(7,17,31,.86) 100%);
     }
 
     .thumb-badges {
@@ -220,13 +234,15 @@
       border-radius: 6px;
       padding: 3px 10px;
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: .04em;
       text-transform: uppercase;
     }
 
     .badge-teal { color: var(--teal); border-color: rgba(18,165,148,.4); }
     .badge-white { color: var(--white); }
+    .badge-blue { color: var(--blue); border-color: rgba(96,165,250,.4); }
+    .badge-purple { color: var(--purple); border-color: rgba(167,139,250,.45); }
 
     .no-img {
       height: 100%;
@@ -239,7 +255,6 @@
       font-size: 13px;
     }
 
-    /* Card body */
     .cbody {
       padding: 22px;
       flex: 1;
@@ -248,25 +263,45 @@
       gap: 14px;
     }
 
-    /* SEO score bar */
-    .seo-bar {
+    .quality-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .quality-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 10px;
+      min-width: 0;
+    }
+
+    .quality-box b { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
+    .quality-box span { font-size: 18px; font-weight: 800; }
+    .quality-box small { display: block; margin-top: 2px; color: var(--muted-2); font-size: 10.5px; }
+
+    .score-good { color: var(--success); }
+    .score-warn { color: var(--warn); }
+    .score-bad  { color: var(--danger); }
+
+    .seo-bar, .source-panel {
       display: flex;
       gap: 8px;
-      align-items: center;
+      align-items: flex-start;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       padding: 10px 14px;
     }
 
-    .seo-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; flex-shrink: 0; }
-
+    .seo-label { font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; flex-shrink: 0; margin-top: 2px; }
     .seo-pills { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
 
     .seo-pill {
       font-size: 10px;
-      font-weight: 700;
-      padding: 2px 8px;
+      font-weight: 800;
+      padding: 3px 8px;
       border-radius: 999px;
       border: 1px solid;
     }
@@ -275,11 +310,32 @@
     .seo-warn  { color: var(--warn);    border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.08); }
     .seo-bad   { color: var(--danger);  border-color: rgba(239,68,68,.35);  background: rgba(239,68,68,.08); }
 
-    /* Fields */
+    .source-panel { flex-direction: column; }
+    .source-head { display:flex; justify-content:space-between; align-items:center; width:100%; gap:10px; }
+    .source-head strong { font-size: 12px; color: var(--white); }
+    .source-head span { color: var(--muted-2); font-size: 11px; }
+    .source-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .source-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      max-width: 100%;
+      color: var(--muted-2);
+      background: rgba(18,165,148,.07);
+      border: 1px solid rgba(18,165,148,.22);
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .source-chip:hover { color: var(--white); border-color: rgba(18,165,148,.45); }
+    .source-chip span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:260px; }
+
     .lbl {
       display: block;
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: .07em;
       color: var(--teal);
@@ -300,46 +356,22 @@
 
     .inp:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-glow); }
     .inp::placeholder { color: var(--muted); }
-
     textarea.inp { resize: vertical; line-height: 1.55; }
-    textarea.inp-content { min-height: 140px; }
-    textarea.inp-meta    { min-height: 66px; }
-
+    textarea.inp-content { min-height: 150px; }
+    textarea.inp-meta { min-height: 66px; }
     select.inp { cursor: pointer; appearance: none; }
 
     .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
-    /* Meta counter */
-    .meta-wrap { position: relative; }
-
-    .char-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 5px;
-    }
-
-    .char-num { font-size: 11px; font-weight: 700; }
+    .char-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+    .char-num { font-size: 11px; font-weight: 800; }
     .char-num.good { color: var(--success); }
     .char-num.warn { color: var(--warn); }
     .char-num.bad  { color: var(--danger); }
+    .char-track { height: 3px; background: var(--border); border-radius: 999px; flex: 1; margin-left: 10px; overflow: hidden; }
+    .char-fill { height: 100%; border-radius: 999px; transition: width .3s, background .3s; }
 
-    .char-track {
-      height: 3px;
-      background: var(--border);
-      border-radius: 999px;
-      flex: 1;
-      margin-left: 10px;
-      overflow: hidden;
-    }
-
-    .char-fill {
-      height: 100%;
-      border-radius: 999px;
-      transition: width .3s, background .3s;
-    }
-
-    /* Serp preview */
     .serp-preview {
       background: #fff;
       border-radius: var(--radius-sm);
@@ -347,13 +379,9 @@
       display: none;
       border: 1px solid var(--border);
     }
-
-    .serp-url   { font-size: 12px; color: #1a7f37; margin-bottom: 2px; }
+    .serp-url { font-size: 12px; color: #1a7f37; margin-bottom: 2px; }
     .serp-title { font-size: 17px; color: #1a0dab; font-weight: 500; margin-bottom: 4px; line-height: 1.3; }
-    .serp-desc  { font-size: 13px; color: #4d5156; line-height: 1.5; }
-
-    /* Content preview modal */
-    .preview-wrap { display: none; }
+    .serp-desc { font-size: 13px; color: #4d5156; line-height: 1.5; }
 
     .preview-box {
       background: #fff;
@@ -367,32 +395,47 @@
       border: 1px solid var(--border);
     }
 
-    /* Card actions */
     .cactions {
       display: flex;
       gap: 8px;
       padding-top: 6px;
       border-top: 1px solid var(--border);
       margin-top: auto;
+      flex-wrap: wrap;
     }
-
     .cactions .btn-teal { flex: 1; justify-content: center; }
 
-    .loading { opacity: .55; pointer-events: none; }
-
-    /* ══════════════════════════════════════════════
-       CONTENT CALENDAR
-    ══════════════════════════════════════════════ */
     .cal-hdr {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       margin-bottom: 20px;
       flex-wrap: wrap;
       gap: 12px;
     }
 
-    .cal-hdr h2 { font-size: 17px; font-weight: 700; }
+    .cal-title h2 { font-size: 19px; font-weight: 800; }
+    .cal-title p { color: var(--muted-2); font-size: 13px; margin-top: 6px; max-width: 780px; line-height: 1.55; }
+
+    .cal-actions { display:flex; gap: 8px; flex-wrap: wrap; justify-content:flex-end; }
+
+    .topic-generator {
+      background: linear-gradient(145deg, rgba(18,165,148,.12), rgba(15,31,53,.96));
+      border: 1px solid rgba(18,165,148,.28);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow);
+      display: none;
+    }
+    .topic-generator.on { display: block; animation: slideDown .2s ease; }
+
+    .generator-grid {
+      display:grid;
+      grid-template-columns: repeat(6, minmax(140px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
 
     .add-form {
       background: var(--card);
@@ -405,12 +448,11 @@
     }
 
     @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
-
     .add-form.on { display: block; }
 
     .add-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
       gap: 14px;
       margin-bottom: 16px;
     }
@@ -419,49 +461,76 @@
 
     table.ctbl {
       width: 100%;
+      min-width: 1220px;
       border-collapse: collapse;
       font-size: 13.5px;
+      background: rgba(21,32,50,.9);
     }
 
     .ctbl th {
       text-align: left;
-      padding: 11px 16px;
+      padding: 11px 14px;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       font-size: 10.5px;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: .07em;
       color: var(--muted);
     }
 
     .ctbl td {
-      padding: 13px 16px;
+      padding: 13px 14px;
       border-bottom: 1px solid rgba(30,50,80,.6);
-      vertical-align: middle;
+      vertical-align: top;
     }
 
     .ctbl tr:last-child td { border-bottom: none; }
-
     .ctbl tr:hover td { background: rgba(18,165,148,.04); }
 
+    .topic-main { font-weight: 800; max-width: 330px; line-height: 1.4; }
+    .topic-sub { color: var(--muted-2); font-size: 11.5px; margin-top: 5px; line-height: 1.5; }
+
     .chip {
-      display: inline-block;
-      padding: 3px 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
       border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 10.5px;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: .04em;
+      white-space: nowrap;
     }
 
-    .chip-pending   { background: rgba(245,158,11,.12); color: #f59e0b; }
+    .chip-pending { background: rgba(245,158,11,.12); color: #f59e0b; }
     .chip-generated { background: rgba(18,165,148,.12); color: var(--teal); }
-    .chip-published { background: rgba(34,197,94,.12);  color: var(--success); }
+    .chip-published { background: rgba(34,197,94,.12); color: var(--success); }
+    .chip-researching { background: rgba(96,165,250,.13); color: var(--blue); }
+    .chip-arabic { background: rgba(167,139,250,.12); color: var(--purple); }
+    .chip-english { background: rgba(96,165,250,.12); color: var(--blue); }
+    .chip-bilingual { background: rgba(18,165,148,.12); color: var(--teal); }
 
-    /* ══════════════════════════════════════════════
-       EMPTY / LOADING
-    ══════════════════════════════════════════════ */
+    .mini-scores { display:flex; gap:6px; flex-wrap:wrap; }
+    .mini-score {
+      min-width: 58px;
+      text-align: center;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 9px;
+      padding: 6px 7px;
+    }
+    .mini-score b { display:block; font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+    .mini-score span { font-size: 15px; font-weight: 900; }
+
+    .evidence-summary {
+      max-width: 280px;
+      color: var(--muted-2);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
     .empty {
       text-align: center;
       padding: 80px 20px;
@@ -469,7 +538,6 @@
       font-size: 15px;
       grid-column: 1 / -1;
     }
-
     .empty svg { opacity: .25; display: block; margin: 0 auto 16px; }
 
     .spinner {
@@ -480,12 +548,10 @@
       animation: spin .7s linear infinite;
       margin: 0 auto 14px;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ══════════════════════════════════════════════
-       TOAST
-    ══════════════════════════════════════════════ */
+    .loading { opacity: .55; pointer-events: none; }
+
     #toast {
       visibility: hidden;
       position: fixed;
@@ -496,7 +562,7 @@
       border: 1px solid var(--teal);
       color: var(--white);
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       padding: 12px 22px;
       border-radius: 999px;
       z-index: 9999;
@@ -506,35 +572,39 @@
       gap: 8px;
       white-space: nowrap;
     }
-
-    #toast.show {
-      visibility: visible;
-      animation: toastIn .35s ease, toastOut .35s ease 2.65s forwards;
-    }
-
-    @keyframes toastIn  { from { opacity:0; bottom:20px; } to { opacity:1; bottom:32px; } }
+    #toast.show { visibility: visible; animation: toastIn .35s ease, toastOut .35s ease 2.65s forwards; }
+    @keyframes toastIn { from { opacity:0; bottom:20px; } to { opacity:1; bottom:32px; } }
     @keyframes toastOut { from { opacity:1; bottom:32px; } to { opacity:0; bottom:20px; } }
 
-    /* ══════════════════════════════════════════════
-       RESPONSIVE
-    ══════════════════════════════════════════════ */
+    .rtl-text { direction: rtl; text-align: right; font-family: 'Noto Kufi Arabic', 'Inter', system-ui, sans-serif; }
+    .ltr-text { direction: ltr; text-align: left; }
+
+    @media (max-width: 980px) {
+      .intelligence-strip { grid-template-columns: repeat(2, 1fr); }
+      .generator-grid { grid-template-columns: repeat(2, 1fr); }
+      .blog-grid { grid-template-columns: 1fr; }
+      .row3 { grid-template-columns: 1fr; }
+    }
+
     @media (max-width: 620px) {
       body { padding: 16px 14px 60px; }
-      .blog-grid { grid-template-columns: 1fr; }
+      .intelligence-strip { grid-template-columns: 1fr; }
       .row2 { grid-template-columns: 1fr; }
+      .generator-grid { grid-template-columns: 1fr; }
       .hdr { flex-direction: column; align-items: flex-start; }
+      .quality-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- HEADER -->
   <header class="hdr">
-    <img src="cropped-White.png" alt="Digitivia" class="logo">
+    <img src="cropped-White.png" alt="Digitivia" class="logo" />
     <div class="stats-bar" id="stats-bar">
       <div class="stat-pill">Drafts <span id="stat-drafts">—</span></div>
       <div class="stat-pill">Topics <span id="stat-topics">—</span></div>
+      <div class="stat-pill">Evidence Sources <span id="stat-sources">—</span></div>
       <div class="stat-pill">Published today <span id="stat-today">—</span></div>
     </div>
     <div class="hdr-right">
@@ -542,37 +612,110 @@
     </div>
   </header>
 
-  <!-- TABS -->
+  <section class="intelligence-strip">
+    <div class="intel-card">
+      <div class="intel-k">SEO Power</div>
+      <div class="intel-v" id="intel-seo">—</div>
+      <div class="intel-s">Keyword fit, meta quality, source-backed search demand.</div>
+    </div>
+    <div class="intel-card">
+      <div class="intel-k">GEO Readiness</div>
+      <div class="intel-v" id="intel-geo">—</div>
+      <div class="intel-s">Entity clarity, citations, AI-overview-friendly evidence.</div>
+    </div>
+    <div class="intel-card">
+      <div class="intel-k">AEO Readiness</div>
+      <div class="intel-v" id="intel-aeo">—</div>
+      <div class="intel-s">Question intent, direct-answer structure, FAQ/PAA fit.</div>
+    </div>
+    <div class="intel-card">
+      <div class="intel-k">Daily Source Mode</div>
+      <div class="intel-v" id="intel-source-mode">Bright Data</div>
+      <div class="intel-s">Calendar topics should be generated from live SERP/trend evidence.</div>
+    </div>
+  </section>
+
   <div class="tabs">
-    <button class="tab on" data-tab="drafts"   onclick="switchTab('drafts')">📝 Drafts</button>
-    <button class="tab"    data-tab="calendar" onclick="switchTab('calendar')">📅 Content Calendar</button>
+    <button class="tab on" data-tab="drafts" onclick="switchTab('drafts')">📝 Drafts</button>
+    <button class="tab" data-tab="calendar" onclick="switchTab('calendar')">📅 Content Calendar</button>
   </div>
 
-  <!-- ═══ DRAFTS PANEL ═══ -->
   <div id="panel-drafts" class="panel on">
     <div id="blog-grid" class="blog-grid">
       <div class="empty"><div class="spinner"></div>Loading drafts…</div>
     </div>
   </div>
 
-  <!-- ═══ CALENDAR PANEL ═══ -->
   <div id="panel-calendar" class="panel">
-
     <div class="cal-hdr">
-      <h2>📅 Content Calendar</h2>
-      <button class="btn btn-teal" onclick="toggleAddForm()">+ Add Topic</button>
+      <div class="cal-title">
+        <h2>📅 Source-Based SEO/GEO/AEO Content Calendar</h2>
+        <p>
+          Topics here are designed to be backed by real source evidence: live SERP demand, People Also Ask style questions, trend signals,
+          authoritative references, and AI-citable facts. The UI keeps your existing n8n webhook structure.
+        </p>
+      </div>
+      <div class="cal-actions">
+        <button class="btn btn-ghost" onclick="toggleGenerator()">⚡ Generate Daily Topics</button>
+        <button class="btn btn-teal" onclick="toggleAddForm()">+ Add Topic</button>
+      </div>
     </div>
 
-    <!-- Add form -->
+    <div id="topic-generator" class="topic-generator">
+      <div class="generator-grid">
+        <div>
+          <label class="lbl">Country</label>
+          <select id="gen-country" class="inp">
+            <option>UAE</option><option>Saudi Arabia</option><option>Egypt</option>
+            <option>Qatar</option><option>Kuwait</option><option>Bahrain</option>
+            <option>Oman</option><option>Jordan</option><option>Lebanon</option><option>Global</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Industry</label>
+          <input id="gen-industry" class="inp" placeholder="banking, ecommerce, real estate" value="AI automation" />
+        </div>
+        <div>
+          <label class="lbl">Language</label>
+          <select id="gen-language" class="inp">
+            <option value="bilingual">Arabic + English</option>
+            <option value="english">English</option>
+            <option value="arabic">Arabic</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Source Mode</label>
+          <select id="gen-source-mode" class="inp">
+            <option value="bright_data_serp">Bright Data SERP</option>
+            <option value="bright_data_serp_google_trends">SERP + Google Trends</option>
+            <option value="manual_research">Manual/Existing Sources</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Topics Count</label>
+          <select id="gen-limit" class="inp">
+            <option>3</option><option selected>5</option><option>7</option><option>10</option>
+          </select>
+        </div>
+        <div>
+          <button id="gen-btn" class="btn btn-teal" style="width:100%;" onclick="generateDailyTopics()">Generate</button>
+        </div>
+      </div>
+      <p style="margin-top:12px;color:var(--muted-2);font-size:12px;line-height:1.55;">
+        Backend expected action: <strong style="color:var(--white);">generate_daily_topics</strong>. Keep your existing
+        <strong style="color:var(--white);">/webhook/blog-calendar</strong> endpoint and add a Switch/IF inside n8n.
+      </p>
+    </div>
+
     <div id="add-form" class="add-form">
       <div class="add-grid">
         <div>
           <label class="lbl">Topic Title *</label>
-          <input id="nw-topic" class="inp" placeholder="e.g. AI Chatbots for Saudi Banks">
+          <input id="nw-topic" class="inp" placeholder="e.g. AI Chatbots for Saudi Banks" />
         </div>
         <div>
           <label class="lbl">Focus Keyword *</label>
-          <input id="nw-kw" class="inp" placeholder="e.g. AI chatbots Saudi Arabia">
+          <input id="nw-kw" class="inp" placeholder="e.g. AI chatbots Saudi Arabia" />
         </div>
         <div>
           <label class="lbl">Country</label>
@@ -584,10 +727,27 @@
         </div>
         <div>
           <label class="lbl">Industry</label>
-          <input id="nw-industry" class="inp" placeholder="e.g. banking, retail, real estate">
+          <input id="nw-industry" class="inp" placeholder="e.g. banking, retail, real estate" />
+        </div>
+        <div>
+          <label class="lbl">Language</label>
+          <select id="nw-language" class="inp">
+            <option value="english">English</option>
+            <option value="arabic">Arabic</option>
+            <option value="bilingual">Arabic + English</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl">Intent</label>
+          <select id="nw-intent" class="inp">
+            <option value="commercial">Commercial</option>
+            <option value="informational">Informational</option>
+            <option value="transactional">Transactional</option>
+            <option value="comparison">Comparison</option>
+          </select>
         </div>
       </div>
-      <div style="display:flex;gap:10px;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn btn-teal" onclick="addTopic()">Save Topic</button>
         <button class="btn btn-ghost" onclick="toggleAddForm()">Cancel</button>
       </div>
@@ -598,16 +758,18 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Topic</th>
-            <th>Focus Keyword</th>
-            <th>Country</th>
-            <th>Industry</th>
+            <th>Topic + Source Reason</th>
+            <th>Keyword</th>
+            <th>Market</th>
+            <th>SEO/GEO/AEO</th>
+            <th>Trend / Difficulty</th>
+            <th>Evidence</th>
             <th>Status</th>
             <th>Added</th>
           </tr>
         </thead>
         <tbody id="cal-body">
-          <tr><td colspan="7" style="text-align:center;padding:50px;color:var(--muted);">
+          <tr><td colspan="9" style="text-align:center;padding:50px;color:var(--muted);">
             <div class="spinner" style="width:24px;height:24px;border-width:2px;"></div>
           </td></tr>
         </tbody>
@@ -615,14 +777,12 @@
     </div>
   </div>
 
-</div><!-- /wrap -->
+</div>
 
-<!-- TOAST -->
 <div id="toast">✓ Done</div>
 
-<!-- SERP PREVIEW MODAL -->
-<div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:800;align-items:center;justify-content:center;padding:20px;" onclick="closeModal()">
-  <div id="modal-box" style="background:var(--card);border:1px solid var(--border-2);border-radius:var(--radius);max-width:860px;width:100%;max-height:90vh;overflow-y:auto;padding:28px;position:relative;" onclick="event.stopPropagation()">
+<div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:800;align-items:center;justify-content:center;padding:20px;" onclick="closeModal()">
+  <div id="modal-box" style="background:var(--card);border:1px solid var(--border-2);border-radius:var(--radius);max-width:900px;width:100%;max-height:90vh;overflow-y:auto;padding:28px;position:relative;" onclick="event.stopPropagation()">
     <button onclick="closeModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;">✕</button>
     <div id="modal-content"></div>
   </div>
@@ -630,22 +790,27 @@
 
 <script>
 /* ════════════════════════════════════════
-   CONFIG
+   CONFIG — same structure / same endpoints
 ════════════════════════════════════════ */
 const WH       = 'https://n8n.srv1174105.hstgr.cloud/webhook/blog-dashboard';
 const WH_CAL   = 'https://n8n.srv1174105.hstgr.cloud/webhook/blog-calendar';
 const SITE_URL = 'https://digitivia.com';
 
-/* ════════════════════════════════════════
-   STATE
-════════════════════════════════════════ */
+/*
+Expected enhanced calendar fields from n8n:
+{
+  topic, focus_keyword, country, industry, status, createdAt,
+  language, intent, source_mode, sources, source_count,
+  trend_score, difficulty_score, opportunity_score,
+  seo_score, geo_score, aeo_score, evidence_summary, why_this_topic
+}
+The UI is backward-compatible: old rows still display using computed fallback scores.
+*/
+
 let _tab = 'drafts';
 let _drafts = [];
 let _topics = [];
 
-/* ════════════════════════════════════════
-   TABS
-════════════════════════════════════════ */
 function switchTab(name) {
   _tab = name;
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
@@ -659,21 +824,29 @@ function refreshCurrent() {
   else fetchCalendar();
 }
 
-/* ════════════════════════════════════════
-   STATS BAR
-════════════════════════════════════════ */
 function updateStats() {
+  const draftMetrics = _drafts.map(calcPostMetrics);
+  const topicMetrics = _topics.map(calcTopicMetrics);
+  const all = [...draftMetrics, ...topicMetrics];
+
+  const avg = (key) => {
+    const arr = all.map(x => Number(x[key] || 0)).filter(n => !Number.isNaN(n));
+    return arr.length ? Math.round(arr.reduce((a,b)=>a+b,0) / arr.length) : 0;
+  };
+
   document.getElementById('stat-drafts').textContent = _drafts.length;
-  document.getElementById('stat-topics').textContent = _topics.filter(t => t.status === 'pending').length + ' pending';
+  document.getElementById('stat-topics').textContent = _topics.filter(t => (t.status || 'pending') === 'pending').length + ' pending';
+  document.getElementById('stat-sources').textContent = _topics.reduce((n,t)=>n + parseSources(t).length, 0);
   const today = new Date().toISOString().slice(0, 10);
   document.getElementById('stat-today').textContent = _topics.filter(t =>
     t.status === 'published' && (t.published_at || '').startsWith(today)
   ).length;
+
+  document.getElementById('intel-seo').textContent = all.length ? avg('seo') + '/100' : '—';
+  document.getElementById('intel-geo').textContent = all.length ? avg('geo') + '/100' : '—';
+  document.getElementById('intel-aeo').textContent = all.length ? avg('aeo') + '/100' : '—';
 }
 
-/* ════════════════════════════════════════
-   FETCH DRAFTS
-════════════════════════════════════════ */
 async function fetchDrafts() {
   const grid = document.getElementById('blog-grid');
   grid.innerHTML = '<div class="empty"><div class="spinner"></div>Loading drafts…</div>';
@@ -694,27 +867,30 @@ function renderDrafts() {
   const grid = document.getElementById('blog-grid');
   grid.innerHTML = '';
   if (_drafts.length === 0) {
-    grid.innerHTML = '<div class="empty"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>No drafts pending review. The AI will generate the next one at 2 PM Cairo time.</div>';
+    grid.innerHTML = '<div class="empty"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>No drafts pending review. The AI will generate the next source-backed article at the configured time.</div>';
     return;
   }
   _drafts.forEach(post => grid.appendChild(buildCard(post)));
 }
 
-/* ════════════════════════════════════════
-   BUILD CARD
-════════════════════════════════════════ */
 function buildCard(post) {
   const div = document.createElement('div');
   div.className = 'card';
   div.id = 'card-' + post.id;
 
   const hasImg = post.image_url && post.image_url.trim();
+  const metrics = calcPostMetrics(post);
+  const sources = parseSources(post);
+  const language = normalizeLang(post.language || detectLanguage(post.title || post.content || 'english'));
+
   const thumbHtml = hasImg
-    ? `<div class="thumb" style="background-image:url('${esc(post.image_url)}')">
+    ? `<div class="thumb" style="background-image:url('${escAttr(post.image_url)}')">
          <div class="thumb-overlay"></div>
          <div class="thumb-badges">
-           ${post.country   ? `<span class="badge badge-teal">${esc(post.country)}</span>` : ''}
-           ${post.category  ? `<span class="badge badge-white">${esc(post.category)}</span>` : ''}
+           ${post.country ? `<span class="badge badge-teal">${esc(post.country)}</span>` : ''}
+           ${post.category ? `<span class="badge badge-white">${esc(post.category)}</span>` : ''}
+           <span class="badge badge-blue">${esc(languageLabel(language))}</span>
+           ${sources.length ? `<span class="badge badge-purple">${sources.length} Sources</span>` : ''}
          </div>
        </div>`
     : `<div class="thumb">
@@ -726,9 +902,7 @@ function buildCard(post) {
 
   const metaLen = (post.meta_desc || '').length;
   const metaClass = metaLen >= 140 && metaLen <= 158 ? 'good' : 'warn';
-
   const seoScore = computeSEOScore(post);
-
   const countries = ['UAE','Saudi Arabia','Egypt','Qatar','Kuwait','Bahrain','Oman','Jordan','Lebanon','Global'];
   const categories = ['Digital Marketing','AI & Automation','SEO','Social Media','E-Commerce','Business Strategy','Technology'];
 
@@ -736,25 +910,42 @@ function buildCard(post) {
     ${thumbHtml}
     <div class="cbody">
 
-      <!-- SEO Score Bar -->
-      <div class="seo-bar" title="Live SEO quality indicators">
-        <span class="seo-label">SEO</span>
+      <div class="quality-grid" title="SEO/GEO/AEO power score">
+        ${qualityBox('SEO', metrics.seo, 'search demand')}
+        ${qualityBox('GEO', metrics.geo, 'AI citation')}
+        ${qualityBox('AEO', metrics.aeo, 'answer intent')}
+      </div>
+
+      <div class="seo-bar" title="Live quality indicators">
+        <span class="seo-label">Checks</span>
         <div class="seo-pills" id="seo-${post.id}">
           ${renderSEOPills(seoScore)}
         </div>
       </div>
 
-      <!-- Title -->
+      ${sources.length ? `
+      <div class="source-panel">
+        <div class="source-head">
+          <strong>Reliable Sources</strong>
+          <span>${sources.length} evidence link${sources.length === 1 ? '' : 's'}</span>
+        </div>
+        <div class="source-list">${renderSourceChips(sources, 3)}</div>
+        ${sources.length > 3 ? `<button class="btn btn-ghost btn-sm" onclick="openSources('${post.id}', 'draft')">View all sources</button>` : ''}
+      </div>` : `
+      <div class="source-panel">
+        <div class="source-head"><strong>Reliable Sources</strong><span>Missing source evidence</span></div>
+        <div class="source-list"><span class="source-chip">! No source URLs returned by workflow</span></div>
+      </div>`}
+
       <div>
         <label class="lbl">Title</label>
-        <input class="inp title-inp" value="${esc(post.title || '')}" oninput="refreshSEO('${post.id}')">
+        <input class="inp title-inp ${language === 'arabic' ? 'rtl-text' : ''}" value="${escAttr(post.title || '')}" oninput="refreshSEO('${post.id}')">
       </div>
 
-      <!-- Keyword + Country -->
       <div class="row2">
         <div>
           <label class="lbl">Focus Keyword</label>
-          <input class="inp kw-inp" value="${esc(post.focus_keyword || '')}" placeholder="main SEO keyword" oninput="refreshSEO('${post.id}')">
+          <input class="inp kw-inp ${language === 'arabic' ? 'rtl-text' : ''}" value="${escAttr(post.focus_keyword || '')}" placeholder="main SEO keyword" oninput="refreshSEO('${post.id}')">
         </div>
         <div>
           <label class="lbl">Country</label>
@@ -764,8 +955,7 @@ function buildCard(post) {
         </div>
       </div>
 
-      <!-- Category + Tags -->
-      <div class="row2">
+      <div class="row3">
         <div>
           <label class="lbl">Category</label>
           <select class="inp cat-inp">
@@ -774,111 +964,108 @@ function buildCard(post) {
         </div>
         <div>
           <label class="lbl">Tags</label>
-          <input class="inp tags-inp" value="${esc(post.tags || '')}" placeholder="tag1, tag2, tag3">
+          <input class="inp tags-inp" value="${escAttr(post.tags || '')}" placeholder="tag1, tag2, tag3">
+        </div>
+        <div>
+          <label class="lbl">Language</label>
+          <select class="inp language-inp">
+            <option value="english"${language === 'english' ? ' selected' : ''}>English</option>
+            <option value="arabic"${language === 'arabic' ? ' selected' : ''}>Arabic</option>
+            <option value="bilingual"${language === 'bilingual' ? ' selected' : ''}>Arabic + English</option>
+          </select>
         </div>
       </div>
 
-      <!-- Meta description -->
       <div>
         <label class="lbl">Meta Description <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;">(ideal: 140–158 chars)</span></label>
-        <div class="meta-wrap">
-          <textarea class="inp inp-meta meta-inp" oninput="updateCounter(this,'${post.id}'); refreshSEO('${post.id}')">${esc(post.meta_desc || '')}</textarea>
-          <div class="char-bar">
-            <span class="char-num ${metaClass}" id="cn-${post.id}">${metaLen}</span>
-            <div class="char-track"><div class="char-fill" id="cf-${post.id}" style="${metaFill(metaLen)}"></div></div>
-          </div>
+        <textarea class="inp inp-meta meta-inp ${language === 'arabic' ? 'rtl-text' : ''}" oninput="updateCounter(this,'${post.id}'); refreshSEO('${post.id}')">${esc(post.meta_desc || '')}</textarea>
+        <div class="char-bar">
+          <span class="char-num ${metaClass}" id="cn-${post.id}">${metaLen}</span>
+          <div class="char-track"><div class="char-fill" id="cf-${post.id}" style="${metaFill(metaLen)}"></div></div>
         </div>
       </div>
 
-      <!-- Google SERP preview toggle -->
       <div>
         <button class="btn btn-ghost btn-sm" onclick="toggleSerp(this,'${post.id}')">🔍 Google Preview</button>
         <div class="serp-preview" id="serp-${post.id}"></div>
       </div>
 
-      <!-- Content -->
       <div>
         <label class="lbl">Content (HTML)</label>
-        <textarea class="inp inp-content content-inp">${esc(post.content || '')}</textarea>
+        <textarea class="inp inp-content content-inp ${language === 'arabic' ? 'rtl-text' : ''}">${esc(post.content || '')}</textarea>
       </div>
 
-      <!-- Content preview -->
-      <div class="preview-wrap" id="pw-${post.id}">
-        <div class="preview-box" id="pb-${post.id}"></div>
-      </div>
-
-      <!-- Actions -->
       <div class="cactions">
         <button class="btn btn-ghost btn-sm" onclick="openPreview('${post.id}')">👁 Preview</button>
-        <button class="btn btn-teal" onclick="publishPost('${post.id}','${esc(post.image_url||'')}')">
-          ✓ Approve &amp; Publish
-        </button>
+        <button class="btn btn-ghost btn-sm" onclick="openSources('${post.id}', 'draft')">🔗 Sources</button>
+        <button class="btn btn-teal" onclick="publishPost('${post.id}','${escAttr(post.image_url||'')}')">✓ Approve &amp; Publish</button>
       </div>
     </div>`;
 
   return div;
 }
 
-/* ════════════════════════════════════════
-   SEO SCORE
-════════════════════════════════════════ */
+function qualityBox(label, score, sub) {
+  const cls = score >= 75 ? 'score-good' : score >= 50 ? 'score-warn' : 'score-bad';
+  return `<div class="quality-box"><b>${label}</b><span class="${cls}">${score}</span><small>${sub}</small></div>`;
+}
+
 function computeSEOScore(post) {
-  const title   = (post.title   || (post.title_inp   && post.title_inp.value)   || '').toLowerCase();
-  const kw      = (post.focus_keyword || '').toLowerCase();
-  const meta    = (post.meta_desc || '').toLowerCase();
+  const title = (post.title || '').toLowerCase();
+  const kw = (post.focus_keyword || '').toLowerCase();
+  const meta = (post.meta_desc || '').toLowerCase();
   const content = (post.content || '').toLowerCase();
   const metaLen = (post.meta_desc || '').length;
+  const sources = parseSources(post);
 
   return {
-    kwInTitle:   kw && title.includes(kw.split(' ')[0]),
-    metaLen:     metaLen >= 140 && metaLen <= 158,
-    kwInMeta:    kw && meta.includes(kw.split(' ')[0]),
-    hasSchema:   !!(post.schema_json && post.schema_json.length > 5),
-    hasImg:      !!(post.image_url && post.image_url.trim()),
-    wordCount:   (content.replace(/<[^>]+>/g, ' ').trim().split(/\s+/).filter(Boolean).length >= 900)
+    kwInTitle: kw && title.includes(kw.split(' ')[0]),
+    metaLen: metaLen >= 140 && metaLen <= 158,
+    kwInMeta: kw && meta.includes(kw.split(' ')[0]),
+    hasSchema: !!(post.schema_json && String(post.schema_json).length > 5),
+    hasImg: !!(post.image_url && post.image_url.trim()),
+    hasSources: sources.length >= 3,
+    wordCount: (content.replace(/<[^>]+>/g, ' ').trim().split(/\s+/).filter(Boolean).length >= 900)
   };
 }
 
 function refreshSEO(id) {
   const card = document.getElementById('card-' + id);
   if (!card) return;
+  const draft = _drafts.find(d => String(d.id) === String(id)) || {};
   const post = {
+    ...draft,
     title: card.querySelector('.title-inp').value,
     focus_keyword: card.querySelector('.kw-inp').value,
     meta_desc: card.querySelector('.meta-inp').value,
-    content: card.querySelector('.content-inp').value,
-    schema_json: '[]',
-    image_url: ''
+    content: card.querySelector('.content-inp').value
   };
-  const score = computeSEOScore(post);
-  document.getElementById('seo-' + id).innerHTML = renderSEOPills(score);
+  document.getElementById('seo-' + id).innerHTML = renderSEOPills(computeSEOScore(post));
   updateSerpBox(id);
 }
 
 function renderSEOPills(s) {
   const pills = [
-    [s.kwInTitle,  'KW in title'],
-    [s.metaLen,    'Meta length'],
-    [s.kwInMeta,   'KW in meta'],
-    [s.hasSchema,  'Schema'],
-    [s.hasImg,     'Image'],
-    [s.wordCount,  '900+ words']
+    [s.kwInTitle, 'KW in title'],
+    [s.metaLen, 'Meta length'],
+    [s.kwInMeta, 'KW in meta'],
+    [s.hasSchema, 'Schema'],
+    [s.hasImg, 'Image'],
+    [s.hasSources, '3+ sources'],
+    [s.wordCount, '900+ words']
   ];
   return pills.map(([ok, label]) =>
     `<span class="seo-pill ${ok ? 'seo-good' : 'seo-warn'}">${ok ? '✓' : '!'} ${label}</span>`
   ).join('');
 }
 
-/* ════════════════════════════════════════
-   META COUNTER
-════════════════════════════════════════ */
 function updateCounter(el, id) {
   const len = el.value.length;
-  const cn  = document.getElementById('cn-' + id);
-  const cf  = document.getElementById('cf-' + id);
-  if (!cn) return;
+  const cn = document.getElementById('cn-' + id);
+  const cf = document.getElementById('cf-' + id);
+  if (!cn || !cf) return;
   cn.textContent = len;
-  cn.className = 'char-num ' + (len >= 140 && len <= 158 ? 'good' : len > 0 && len < 140 ? 'warn' : len > 158 ? 'bad' : 'warn');
+  cn.className = 'char-num ' + (len >= 140 && len <= 158 ? 'good' : len > 158 ? 'bad' : 'warn');
   cf.style.cssText = metaFill(len);
 }
 
@@ -888,9 +1075,6 @@ function metaFill(len) {
   return `width:${pct}%;background:${col};`;
 }
 
-/* ════════════════════════════════════════
-   SERP PREVIEW
-════════════════════════════════════════ */
 function toggleSerp(btn, id) {
   const box = document.getElementById('serp-' + id);
   const open = box.style.display === 'block';
@@ -904,49 +1088,75 @@ function updateSerpBox(id) {
   if (!box || box.style.display !== 'block') return;
   const card = document.getElementById('card-' + id);
   const title = esc(card.querySelector('.title-inp').value || 'Blog Title');
-  const meta  = esc(card.querySelector('.meta-inp').value  || 'Meta description will appear here.');
-  box.innerHTML = `
-    <div class="serp-url">${SITE_URL}/blog/ › article-title</div>
-    <div class="serp-title">${title} - Digitivia</div>
-    <div class="serp-desc">${meta}</div>`;
+  const meta = esc(card.querySelector('.meta-inp').value || 'Meta description will appear here.');
+  box.innerHTML = `<div class="serp-url">${SITE_URL}/blog/ › article-title</div><div class="serp-title">${title} - Digitivia</div><div class="serp-desc">${meta}</div>`;
 }
 
-/* ════════════════════════════════════════
-   CONTENT PREVIEW
-════════════════════════════════════════ */
 function openPreview(id) {
-  const card    = document.getElementById('card-' + id);
+  const card = document.getElementById('card-' + id);
   const content = card.querySelector('.content-inp').value;
-  const title   = card.querySelector('.title-inp').value;
-  const meta    = card.querySelector('.meta-inp').value;
-  const modal   = document.getElementById('modal-content');
+  const title = card.querySelector('.title-inp').value;
+  const meta = card.querySelector('.meta-inp').value;
+  const lang = normalizeLang(card.querySelector('.language-inp')?.value || detectLanguage(content));
+  const modal = document.getElementById('modal-content');
   modal.innerHTML = `
-    <h2 style="font-size:20px;margin-bottom:10px;">${esc(title)}</h2>
-    <p style="color:var(--muted);font-size:12px;margin-bottom:20px;">${esc(meta)}</p>
-    <div style="background:#fff;border-radius:10px;padding:24px;color:#1b1b1b;font-size:15px;line-height:1.7;">${content}</div>`;
+    <h2 class="${lang === 'arabic' ? 'rtl-text' : ''}" style="font-size:20px;margin-bottom:10px;">${esc(title)}</h2>
+    <p class="${lang === 'arabic' ? 'rtl-text' : ''}" style="color:var(--muted);font-size:12px;margin-bottom:20px;">${esc(meta)}</p>
+    <div class="${lang === 'arabic' ? 'rtl-text' : ''}" style="background:#fff;border-radius:10px;padding:24px;color:#1b1b1b;font-size:15px;line-height:1.7;">${content}</div>`;
   document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function openSources(id, kind) {
+  const row = kind === 'topic'
+    ? _topics.find(t => String(t.id || t.topic) === String(id))
+    : _drafts.find(d => String(d.id) === String(id));
+  const sources = parseSources(row || {});
+  const modal = document.getElementById('modal-content');
+  modal.innerHTML = `
+    <h2 style="font-size:20px;margin-bottom:10px;">Reliable Evidence Sources</h2>
+    <p style="color:var(--muted-2);font-size:13px;margin-bottom:18px;line-height:1.55;">
+      These are the URLs the workflow returned for SEO/GEO/AEO evidence. Empty sources means the backend still needs the research step.
+    </p>
+    ${sources.length ? `<div style="display:grid;gap:10px;">${sources.map((s,i)=>sourceBlock(s,i)).join('')}</div>` :
+      `<div class="empty" style="padding:40px 10px;">No sources were returned for this item yet.</div>`}
+  `;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function sourceBlock(s, i) {
+  const title = esc(s.title || s.name || s.url || ('Source ' + (i+1)));
+  const url = escAttr(s.url || s.link || '#');
+  const type = esc(s.type || s.source_type || 'source');
+  const snippet = esc(s.snippet || s.summary || s.evidence || '');
+  return `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+      <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+        <strong style="font-size:13px;">${i+1}. ${title}</strong>
+        <span class="chip chip-generated">${type}</span>
+      </div>
+      ${snippet ? `<p style="font-size:12px;color:var(--muted-2);line-height:1.55;margin-top:7px;">${snippet}</p>` : ''}
+      ${url !== '#' ? `<a href="${url}" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;color:var(--teal);font-size:12px;text-decoration:none;font-weight:700;">Open source ↗</a>` : ''}
+    </div>`;
 }
 
 function closeModal() {
   document.getElementById('modal-overlay').style.display = 'none';
 }
 
-/* ════════════════════════════════════════
-   PUBLISH
-════════════════════════════════════════ */
 async function publishPost(id, imgUrl) {
   const card = document.getElementById('card-' + id);
-  const btn  = card.querySelector('.btn-teal');
+  const btn = card.querySelector('.btn-teal');
 
-  const title   = card.querySelector('.title-inp').value.trim();
+  const title = card.querySelector('.title-inp').value.trim();
   const content = card.querySelector('.content-inp').value.trim();
-  const meta    = card.querySelector('.meta-inp').value.trim();
-  const kw      = card.querySelector('.kw-inp').value.trim();
-  const cat     = card.querySelector('.cat-inp').value;
-  const tags    = card.querySelector('.tags-inp').value.trim();
+  const meta = card.querySelector('.meta-inp').value.trim();
+  const kw = card.querySelector('.kw-inp').value.trim();
+  const cat = card.querySelector('.cat-inp').value;
+  const tags = card.querySelector('.tags-inp').value.trim();
   const country = card.querySelector('.country-inp').value;
+  const language = card.querySelector('.language-inp')?.value || 'english';
 
-  if (!title)   { alert('Title is required.'); return; }
+  if (!title) { alert('Title is required.'); return; }
   if (!content) { alert('Content is required.'); return; }
 
   card.classList.add('loading');
@@ -954,30 +1164,34 @@ async function publishPost(id, imgUrl) {
   btn.disabled = true;
 
   const draft = _drafts.find(d => String(d.id) === String(id)) || {};
-
   const payload = {
     id,
-    new_title:     title,
-    new_content:   content,
-    excerpt:       meta,
-    image_url:     imgUrl,
+    new_title: title,
+    new_content: content,
+    excerpt: meta,
+    image_url: imgUrl,
     focus_keyword: kw,
-    category:      cat,
+    category: cat,
     tags,
     country,
-    schema_json:   draft.schema_json || '',
-    alt_text:      draft.alt_text    || ''
+    language,
+    schema_json: draft.schema_json || '',
+    alt_text: draft.alt_text || '',
+    sources: draft.sources || draft.source_urls || [],
+    seo_score: calcPostMetrics({...draft, title, content, meta_desc: meta, focus_keyword: kw}).seo,
+    geo_score: calcPostMetrics({...draft, title, content, meta_desc: meta, focus_keyword: kw}).geo,
+    aeo_score: calcPostMetrics({...draft, title, content, meta_desc: meta, focus_keyword: kw}).aeo
   };
 
   try {
     const res = await fetch(WH, {
-      method:  'POST',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(payload)
+      body: JSON.stringify(payload)
     });
     if (res.ok) {
       card.style.transform = 'scale(.93)';
-      card.style.opacity   = '0';
+      card.style.opacity = '0';
       setTimeout(() => {
         card.remove();
         _drafts = _drafts.filter(d => String(d.id) !== String(id));
@@ -1006,7 +1220,7 @@ async function publishPost(id, imgUrl) {
 ════════════════════════════════════════ */
 async function fetchCalendar() {
   const tbody = document.getElementById('cal-body');
-  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:50px;"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin:0 auto;"></div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:50px;"><div class="spinner" style="width:24px;height:24px;border-width:2px;margin:0 auto;"></div></td></tr>';
   try {
     const res = await fetch(WH_CAL, { method: 'GET' });
     let data = await res.json();
@@ -1016,50 +1230,158 @@ async function fetchCalendar() {
     renderCalendar();
   } catch (e) {
     console.error(e);
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--danger);">⚠ Could not load calendar. Check n8n workflow is active.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--danger);">⚠ Could not load calendar. Check n8n workflow is active.</td></tr>';
   }
 }
 
 function renderCalendar() {
   const tbody = document.getElementById('cal-body');
   if (_topics.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:60px;color:var(--muted);">No topics yet. Click "+ Add Topic" to get started.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:60px;color:var(--muted);">No topics yet. Click "+ Add Topic" or "Generate Daily Topics".</td></tr>';
     return;
   }
-  tbody.innerHTML = _topics.map((row, i) => `
+  tbody.innerHTML = _topics.map((row, i) => calendarRow(row, i)).join('');
+}
+
+function calendarRow(row, i) {
+  const metrics = calcTopicMetrics(row);
+  const sources = parseSources(row);
+  const lang = normalizeLang(row.language || detectLanguage(row.topic || 'english'));
+  const id = escAttr(String(row.id || row.topic || i));
+
+  return `
     <tr>
       <td style="color:var(--muted);font-size:12px;">${i + 1}</td>
-      <td style="font-weight:600;max-width:260px;">${esc(row.topic || '—')}</td>
-      <td style="color:var(--teal);font-size:12px;">${esc(row.focus_keyword || '—')}</td>
-      <td>${esc(row.country || '—')}</td>
-      <td style="color:var(--muted);">${esc(row.industry || '—')}</td>
-      <td><span class="chip chip-${row.status || 'pending'}">${row.status || 'pending'}</span></td>
+      <td>
+        <div class="topic-main ${lang === 'arabic' ? 'rtl-text' : ''}">${esc(row.topic || '—')}</div>
+        <div class="topic-sub ${lang === 'arabic' ? 'rtl-text' : ''}">
+          ${esc(row.why_this_topic || row.evidence_summary || 'Waiting for live evidence from the research step.')}
+        </div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="chip chip-${lang}">${esc(languageLabel(lang))}</span>
+          ${row.intent ? `<span class="chip chip-generated">${esc(row.intent)}</span>` : ''}
+        </div>
+      </td>
+      <td>
+        <div style="color:var(--teal);font-size:12px;font-weight:800;max-width:190px;">${esc(row.focus_keyword || '—')}</div>
+        <div style="color:var(--muted);font-size:11px;margin-top:5px;">${esc(row.source_mode || 'source pending')}</div>
+      </td>
+      <td>
+        <div>${esc(row.country || '—')}</div>
+        <div style="color:var(--muted);font-size:12px;margin-top:4px;">${esc(row.industry || '—')}</div>
+      </td>
+      <td><div class="mini-scores">
+        ${miniScore('SEO', metrics.seo)}
+        ${miniScore('GEO', metrics.geo)}
+        ${miniScore('AEO', metrics.aeo)}
+      </div></td>
+      <td>
+        <div class="mini-scores">
+          ${miniScore('Trend', metrics.trend)}
+          ${miniScore('Diff', metrics.difficulty, true)}
+        </div>
+        <div style="color:var(--muted);font-size:11px;margin-top:7px;">Opportunity: <strong style="color:var(--white);">${metrics.opportunity}/100</strong></div>
+      </td>
+      <td>
+        <div class="evidence-summary">${esc(shortText(row.evidence_summary || row.why_this_topic || `${sources.length} source URL(s) attached`, 140))}</div>
+        <div style="margin-top:8px;" class="source-list">${renderSourceChips(sources, 2)}</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:8px;" onclick="openSources('${id}', 'topic')">Evidence</button>
+      </td>
+      <td><span class="chip chip-${escAttr(row.status || 'pending')}">${esc(row.status || 'pending')}</span></td>
       <td style="color:var(--muted);font-size:12px;">${row.createdAt ? new Date(row.createdAt).toLocaleDateString('en-GB') : '—'}</td>
-    </tr>`).join('');
+    </tr>`;
+}
+
+function miniScore(label, score, inverse=false) {
+  let cls;
+  if (inverse) cls = score <= 35 ? 'score-good' : score <= 65 ? 'score-warn' : 'score-bad';
+  else cls = score >= 75 ? 'score-good' : score >= 50 ? 'score-warn' : 'score-bad';
+  return `<div class="mini-score"><b>${label}</b><span class="${cls}">${score}</span></div>`;
+}
+
+function toggleGenerator() {
+  document.getElementById('topic-generator').classList.toggle('on');
 }
 
 function toggleAddForm() {
   document.getElementById('add-form').classList.toggle('on');
 }
 
+async function generateDailyTopics() {
+  const btn = document.getElementById('gen-btn');
+  const country = document.getElementById('gen-country').value;
+  const industry = document.getElementById('gen-industry').value.trim() || 'AI automation';
+  const language = document.getElementById('gen-language').value;
+  const source_mode = document.getElementById('gen-source-mode').value;
+  const limit = Number(document.getElementById('gen-limit').value || 5);
+
+  btn.textContent = 'Generating…';
+  btn.disabled = true;
+
+  const payload = {
+    action: 'generate_daily_topics',
+    country,
+    industry,
+    language,
+    source_mode,
+    limit,
+    brand: 'Digitivia',
+    goals: ['SEO', 'GEO', 'AEO'],
+    min_sources_per_topic: 3,
+    require_real_sources: true
+  };
+
+  try {
+    const res = await fetch(WH_CAL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt || res.status);
+    }
+
+    toast('⚡ Daily source topics requested!');
+    fetchCalendar();
+  } catch (e) {
+    console.error(e);
+    alert('Generation failed. Add the backend Switch/IF for action=generate_daily_topics in n8n. Details: ' + e.message);
+  } finally {
+    btn.textContent = 'Generate';
+    btn.disabled = false;
+  }
+}
+
 async function addTopic() {
-  const topic    = document.getElementById('nw-topic').value.trim();
-  const kw       = document.getElementById('nw-kw').value.trim();
-  const country  = document.getElementById('nw-country').value;
+  const topic = document.getElementById('nw-topic').value.trim();
+  const kw = document.getElementById('nw-kw').value.trim();
+  const country = document.getElementById('nw-country').value;
   const industry = document.getElementById('nw-industry').value.trim();
+  const language = document.getElementById('nw-language').value;
+  const intent = document.getElementById('nw-intent').value;
+
   if (!topic || !kw) { alert('Topic and Focus Keyword are required.'); return; }
 
   const btn = document.querySelector('#add-form .btn-teal');
   btn.textContent = 'Saving…';
   btn.disabled = true;
 
+  /*
+    Existing workflow compatibility:
+    If your Data Table still only has old columns, keep only topic/focus_keyword/country/industry/status.
+    After adding enhanced columns, n8n can store language + intent too.
+  */
+  const payload = { topic, focus_keyword: kw, country, industry, status: 'pending', language, intent };
+
   try {
     const res = await fetch(WH_CAL, {
-      method:  'POST',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ topic, focus_keyword: kw, country, industry, status: 'pending' })
+      body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error(res.status);
+    if (!res.ok) throw new Error(await res.text() || res.status);
     ['nw-topic','nw-kw','nw-industry'].forEach(id => document.getElementById(id).value = '');
     toggleAddForm();
     toast('✓ Topic added to calendar!');
@@ -1074,14 +1396,173 @@ async function addTopic() {
 }
 
 /* ════════════════════════════════════════
-   UTILITIES
+   METRIC HELPERS
 ════════════════════════════════════════ */
+function calcPostMetrics(post) {
+  const sources = parseSources(post);
+  const seoBase = computeSEOScore(post);
+  const wordCount = (post.content || '').replace(/<[^>]+>/g, ' ').trim().split(/\s+/).filter(Boolean).length;
+  const faqCount = safeArray(post.faq_items).length + countMatches(post.content || '', /<h2[^>]*>.*?\?/gi);
+  const directAnswer = countMatches(post.content || '', /what is|how can|why does|key takeaway|faq/i);
+  const citations = sources.length;
+
+  const seo = clamp(
+    (seoBase.kwInTitle ? 16 : 0) + (seoBase.metaLen ? 16 : 0) + (seoBase.kwInMeta ? 12 : 0) +
+    (seoBase.hasSchema ? 14 : 0) + (seoBase.hasImg ? 10 : 0) + (wordCount >= 900 ? 14 : 0) +
+    Math.min(18, citations * 6),
+    0, 100
+  );
+
+  const geo = clamp(
+    20 + Math.min(25, citations * 8) + (seoBase.hasSchema ? 15 : 0) +
+    ((post.content || '').includes('Digitivia') ? 10 : 0) +
+    ((post.content || '').toLowerCase().includes('sources') ? 10 : 0) +
+    (wordCount >= 900 ? 10 : 0) + (post.country ? 10 : 0),
+    0, 100
+  );
+
+  const aeo = clamp(
+    25 + Math.min(25, faqCount * 5) + (directAnswer ? 18 : 0) +
+    ((post.content || '').toLowerCase().includes('key takeaways') ? 12 : 0) +
+    (safeArray(post.how_to_steps).length ? 10 : 0) +
+    (citations >= 3 ? 10 : 0),
+    0, 100
+  );
+
+  return { seo: Math.round(seo), geo: Math.round(geo), aeo: Math.round(aeo) };
+}
+
+function calcTopicMetrics(row) {
+  const sources = parseSources(row);
+  const trend = clamp(num(row.trend_score ?? row.trendScore ?? row.search_interest ?? row.trend, sources.length ? 62 : 0), 0, 100);
+  const difficulty = clamp(num(row.difficulty_score ?? row.keyword_difficulty ?? row.difficulty, 42), 0, 100);
+  const opportunityRaw = row.opportunity_score ?? row.opportunity;
+  const opportunity = clamp(num(opportunityRaw, Math.round((trend * .62) + ((100 - difficulty) * .28) + (Math.min(5, sources.length) * 2))), 0, 100);
+
+  const kw = row.focus_keyword ? 1 : 0;
+  const hasReason = row.why_this_topic || row.evidence_summary ? 1 : 0;
+  const lang = normalizeLang(row.language || detectLanguage(row.topic || ''));
+
+  const seo = clamp(num(row.seo_score, 25 + trend * .34 + opportunity * .22 + kw * 16 + Math.min(18, sources.length * 6)), 0, 100);
+  const geo = clamp(num(row.geo_score, 20 + Math.min(35, sources.length * 9) + hasReason * 15 + (row.country ? 10 : 0) + (row.industry ? 8 : 0) + (lang === 'bilingual' ? 12 : 6)), 0, 100);
+  const aeo = clamp(num(row.aeo_score, 25 + questionIntentScore(row.topic || row.focus_keyword || '') + (row.intent ? 12 : 0) + Math.min(24, sources.length * 6) + (lang === 'bilingual' ? 10 : 5)), 0, 100);
+
+  return {
+    seo: Math.round(seo),
+    geo: Math.round(geo),
+    aeo: Math.round(aeo),
+    trend: Math.round(trend),
+    difficulty: Math.round(difficulty),
+    opportunity: Math.round(opportunity)
+  };
+}
+
+function questionIntentScore(text) {
+  const t = String(text).toLowerCase();
+  let score = 0;
+  if (/\bwhat\b|\bwhy\b|\bhow\b|\bbest\b|\bwhich\b|\bshould\b|ما|كيف|لماذا|أفضل|هل/.test(t)) score += 24;
+  if (/cost|price|benefit|compare|strategy|steps|guide|تكلفة|سعر|مقارنة|استراتيجية|خطوات|دليل/.test(t)) score += 16;
+  return score;
+}
+
+function parseSources(row) {
+  if (!row) return [];
+  let src = row.sources ?? row.source_urls ?? row.references ?? row.evidence_sources ?? row.real_sources ?? [];
+  if (typeof src === 'string') {
+    const trimmed = src.trim();
+    if (!trimmed) return [];
+    try { src = JSON.parse(trimmed); }
+    catch(e) {
+      src = trimmed.split(/\n|,\s*(?=https?:\/\/)/).map(u => ({ url: u.trim(), title: domainFromUrl(u.trim()) })).filter(s => s.url);
+    }
+  }
+  if (!Array.isArray(src)) src = [src];
+  return src.map(s => {
+    if (typeof s === 'string') return { url: s, title: domainFromUrl(s) };
+    return {
+      title: s.title || s.name || domainFromUrl(s.url || s.link || ''),
+      url: s.url || s.link || '',
+      type: s.type || s.source_type || s.engine || 'source',
+      snippet: s.snippet || s.summary || s.evidence || s.description || ''
+    };
+  }).filter(s => s.url || s.title);
+}
+
+function renderSourceChips(sources, max=3) {
+  if (!sources.length) return '<span class="source-chip">! Source pending</span>';
+  return sources.slice(0, max).map(s => {
+    const url = s.url || '#';
+    const label = s.title || domainFromUrl(url) || 'Source';
+    return `<a class="source-chip" href="${escAttr(url)}" target="_blank" rel="noopener" title="${escAttr(label)}">↗ <span>${esc(label)}</span></a>`;
+  }).join('');
+}
+
+function domainFromUrl(url) {
+  try { return new URL(url).hostname.replace(/^www\./, ''); }
+  catch(e) { return String(url || '').replace(/^https?:\/\//,'').split('/')[0]; }
+}
+
+function detectLanguage(s) {
+  const text = String(s || '');
+  const arChars = (text.match(/[\u0600-\u06FF]/g) || []).length;
+  const latinChars = (text.match(/[A-Za-z]/g) || []).length;
+  if (arChars && latinChars) return 'bilingual';
+  if (arChars > latinChars) return 'arabic';
+  return 'english';
+}
+
+function normalizeLang(v) {
+  const s = String(v || '').toLowerCase();
+  if (s.includes('arabic') && s.includes('english')) return 'bilingual';
+  if (s.includes('bilingual')) return 'bilingual';
+  if (s.includes('ar')) return 'arabic';
+  return 'english';
+}
+
+function languageLabel(lang) {
+  if (lang === 'arabic') return 'Arabic';
+  if (lang === 'bilingual') return 'Arabic + English';
+  return 'English';
+}
+
+function safeArray(v) {
+  if (Array.isArray(v)) return v;
+  if (typeof v === 'string' && v.trim()) {
+    try { const parsed = JSON.parse(v); return Array.isArray(parsed) ? parsed : []; }
+    catch(e) { return []; }
+  }
+  return [];
+}
+
+function countMatches(text, re) {
+  const m = String(text || '').match(re);
+  return m ? m.length : 0;
+}
+
+function num(v, d=0) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : d;
+}
+
+function clamp(n, min, max) {
+  return Math.max(min, Math.min(max, Number(n) || 0));
+}
+
+function shortText(s, n) {
+  const str = String(s || '');
+  return str.length > n ? str.slice(0, n - 1) + '…' : str;
+}
+
 function esc(s) {
-  return String(s)
+  return String(s ?? '')
     .replace(/&/g,'&amp;')
     .replace(/"/g,'&quot;')
     .replace(/</g,'&lt;')
     .replace(/>/g,'&gt;');
+}
+
+function escAttr(s) {
+  return esc(s).replace(/'/g, '&#39;');
 }
 
 function toast(msg) {
@@ -1091,9 +1572,6 @@ function toast(msg) {
   setTimeout(() => { t.className = ''; }, 3000);
 }
 
-/* ════════════════════════════════════════
-   INIT
-════════════════════════════════════════ */
 fetchDrafts();
 </script>
 </body>
