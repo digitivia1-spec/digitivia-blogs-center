@@ -9,18 +9,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Digitivia Dark Theme Colors */
-            --bg-gradient-start: #0f172a; /* Dark slate blue */
-            --bg-gradient-end: #0d1b1e;   /* Darker greenish-blue */
-            --card-bg: #1e293b;           /* Lighter dark blue-gray for cards */
-            --primary: #12A594;           /* Digitivia Teal/Cyan */
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #0d1b1e;
+            --card-bg: #1e293b;
+            --primary: #12A594;
             --primary-hover: #0e8a7a;
             --text-white: #ffffff;
-            --text-light: #94a3b8;        /* Light gray for secondary text */
-            --border-color: #334155;      /* Subtle dark border */
+            --text-light: #94a3b8;
+            --border-color: #334155;
             --border-radius: 12px;
             --input-bg: #0f172a;
+            --danger: #ef4444;
+            --warn: #f59e0b;
+            --success: #22c55e;
         }
+
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -29,237 +33,434 @@
             padding: 30px;
             color: var(--text-white);
             min-height: 100vh;
-            box-sizing: border-box;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1300px; margin: 0 auto; }
 
-        /* Header & Logo */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .logo {
-            height: 50px; /* Adjust height as needed for your logo */
-            width: auto;
+        .logo { height: 50px; width: auto; }
+
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 28px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0;
         }
 
-        /* Buttons */
+        .tab-btn {
+            padding: 10px 22px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: -1px;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-btn:hover { color: var(--text-white); }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── Buttons ── */
         .btn {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             border: none;
             transition: all 0.2s ease;
         }
 
-        .refresh-btn {
-            background-color: transparent;
+        .btn-outline {
+            background: transparent;
             color: var(--text-white);
             border: 1px solid var(--border-color);
         }
-        .refresh-btn:hover {
-            background-color: var(--border-color);
-        }
+        .btn-outline:hover { background: var(--border-color); }
 
-        .btn-publish {
-            background-color: var(--primary);
+        .btn-primary {
+            background: var(--primary);
             color: var(--text-white);
-            width: 100%; /* Full width on mobile */
         }
-        .btn-publish:hover { background-color: var(--primary-hover); }
-        .btn-publish:disabled {
-            background-color: var(--text-light);
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-primary:disabled { background: var(--text-light); cursor: not-allowed; opacity: 0.7; }
 
-        /* Grid Layout */
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+        .btn-danger:hover { background: rgba(239,68,68,0.1); }
+
+        .btn-sm { padding: 6px 14px; font-size: 12px; }
+
+        /* ── Grid ── */
         .blog-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 28px;
         }
 
-        /* Card Styles */
+        /* ── Card ── */
         .card {
             background: var(--card-bg);
             border-radius: var(--border-radius);
             border: 1px solid var(--border-color);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.15);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: transform 0.2s, opacity 0.3s;
         }
 
-        .card:hover { transform: translateY(-5px); }
+        .card:hover { transform: translateY(-4px); }
 
         .card-image {
-            height: 220px;
-            background-color: var(--input-bg);
+            height: 200px;
+            background: var(--input-bg);
             background-size: cover;
             background-position: center;
-            position: relative;
             border-bottom: 1px solid var(--border-color);
+            position: relative;
         }
 
         .no-image-placeholder {
             height: 100%;
-            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             color: var(--text-light);
-            font-size: 14px;
-            gap: 10px;
+            font-size: 13px;
+            gap: 8px;
         }
-        
+
+        .country-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(15,23,42,0.85);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
         .card-body {
-            padding: 25px;
+            padding: 22px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
-        /* Inputs */
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
         .label {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--primary); /* Use accent color for labels */
-            margin-bottom: 8px;
+            letter-spacing: 0.06em;
+            color: var(--primary);
+            margin-bottom: 6px;
             display: block;
         }
 
         .edit-input {
             width: 100%;
-            padding: 12px 16px;
-            background-color: var(--input-bg);
+            padding: 10px 14px;
+            background: var(--input-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             font-family: inherit;
             color: var(--text-white);
-            box-sizing: border-box;
             transition: border-color 0.2s;
         }
 
-        .edit-input:focus {
-            outline: none;
-            border-color: var(--primary);
+        .edit-input:focus { outline: none; border-color: var(--primary); }
+
+        textarea.edit-input { resize: vertical; min-height: 130px; line-height: 1.5; }
+        textarea.meta-input { min-height: 72px; }
+
+        select.edit-input { cursor: pointer; appearance: none; }
+
+        /* SEO counter */
+        .meta-wrapper { position: relative; }
+        .char-count {
+            font-size: 11px;
+            margin-top: 4px;
+            text-align: right;
+            font-weight: 600;
+        }
+        .char-count.good { color: var(--success); }
+        .char-count.warn { color: var(--warn); }
+        .char-count.bad  { color: var(--danger); }
+
+        /* Preview */
+        .preview-box {
+            background: #fff;
+            border-radius: 8px;
+            padding: 18px;
+            color: #1b1b1b;
+            font-size: 14px;
+            max-height: 360px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            display: none;
         }
 
-        textarea.edit-input {
-            resize: vertical;
-            min-height: 150px;
-            line-height: 1.5;
-        }
-
-        /* Short Textarea for Meta Desc */
-        textarea.short-input {
-            min-height: 80px;
-        }
-
-        /* Actions */
         .card-actions {
             margin-top: auto;
-            padding-top: 20px;
+            padding-top: 10px;
+            display: flex;
+            gap: 10px;
         }
 
         .loading { opacity: 0.6; pointer-events: none; }
-        
-        /* Status Toast */
+
+        /* ── Content Calendar ── */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cal-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .cal-table th {
+            text-align: left;
+            padding: 10px 14px;
+            color: var(--text-light);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .cal-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(51,65,85,0.5);
+            vertical-align: middle;
+        }
+
+        .cal-table tr:hover td { background: rgba(18,165,148,0.05); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-pending   { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .status-generated { background: rgba(18,165,148,0.15); color: #12A594; }
+        .status-published { background: rgba(34,197,94,0.15);  color: #22c55e; }
+
+        /* Add Topic Form */
+        .add-topic-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 28px;
+            display: none;
+        }
+
+        .add-topic-panel.open { display: block; }
+
+        .add-topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        /* ── Toast ── */
         #toast {
             visibility: hidden;
-            min-width: 250px;
-            background-color: var(--primary); /* Teal background for success */
-            color: white;
+            min-width: 240px;
+            background: var(--primary);
+            color: #fff;
             text-align: center;
             border-radius: 8px;
-            padding: 16px;
+            padding: 14px 20px;
             position: fixed;
-            z-index: 10;
+            z-index: 999;
             left: 50%;
             bottom: 30px;
             transform: translateX(-50%);
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 14px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: opacity 0.3s;
         }
 
-        #toast.show { visibility: visible; -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        
-        /* Loading Text */
-        .loading-text { color: var(--text-light); font-size: 18px; }
+        #toast.show { visibility: visible; animation: fadein 0.4s, fadeout 0.4s 2.6s; }
+
+        @keyframes fadein  { from { opacity:0; bottom:20px; } to { opacity:1; bottom:30px; } }
+        @keyframes fadeout { from { opacity:1; bottom:30px; } to { opacity:0; bottom:20px; } }
+
+        .loading-text { color: var(--text-light); font-size: 16px; }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
+        .empty-state svg { opacity: 0.3; margin-bottom: 12px; }
     </style>
 </head>
 <body>
-
 <div class="container">
     <header>
         <img src="cropped-White.png" alt="Digitivia Logo" class="logo">
-        <button onclick="fetchDrafts()" class="btn refresh-btn">Refresh List</button>
+        <div class="header-actions">
+            <button onclick="switchTab('drafts'); fetchDrafts();" class="btn btn-outline">↻ Refresh</button>
+        </div>
     </header>
 
-    <div id="blog-grid" class="blog-grid">
-        <p class="loading-text">Loading drafts...</p>
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('drafts')">📝 Drafts</button>
+        <button class="tab-btn" onclick="switchTab('calendar')">📅 Content Calendar</button>
+    </div>
+
+    <!-- DRAFTS TAB -->
+    <div id="tab-drafts" class="tab-panel active">
+        <div id="blog-grid" class="blog-grid">
+            <p class="loading-text">Loading drafts...</p>
+        </div>
+    </div>
+
+    <!-- CONTENT CALENDAR TAB -->
+    <div id="tab-calendar" class="tab-panel">
+        <div class="calendar-header">
+            <h2 style="margin:0;font-size:18px;">Content Calendar</h2>
+            <button class="btn btn-primary" onclick="toggleAddForm()">+ Add Topic</button>
+        </div>
+
+        <!-- Add Topic Form -->
+        <div id="add-topic-panel" class="add-topic-panel">
+            <div class="add-topic-grid">
+                <div>
+                    <span class="label">Topic</span>
+                    <input type="text" id="new-topic" class="edit-input" placeholder="e.g. AI Chatbots for Saudi Banks">
+                </div>
+                <div>
+                    <span class="label">Focus Keyword</span>
+                    <input type="text" id="new-keyword" class="edit-input" placeholder="e.g. AI chatbots Saudi Arabia">
+                </div>
+                <div>
+                    <span class="label">Country</span>
+                    <select id="new-country" class="edit-input">
+                        <option value="UAE">UAE</option>
+                        <option value="Saudi Arabia">Saudi Arabia</option>
+                        <option value="Egypt">Egypt</option>
+                        <option value="Qatar">Qatar</option>
+                        <option value="Kuwait">Kuwait</option>
+                        <option value="Bahrain">Bahrain</option>
+                        <option value="Oman">Oman</option>
+                        <option value="Jordan">Jordan</option>
+                        <option value="Lebanon">Lebanon</option>
+                        <option value="Global">Global</option>
+                    </select>
+                </div>
+                <div>
+                    <span class="label">Industry</span>
+                    <input type="text" id="new-industry" class="edit-input" placeholder="e.g. banking, retail, real estate">
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button class="btn btn-primary" onclick="addTopic()">Save Topic</button>
+                <button class="btn btn-outline" onclick="toggleAddForm()">Cancel</button>
+            </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table class="cal-table">
+                <thead>
+                    <tr>
+                        <th>Topic</th>
+                        <th>Focus Keyword</th>
+                        <th>Country</th>
+                        <th>Industry</th>
+                        <th>Status</th>
+                        <th>Added</th>
+                    </tr>
+                </thead>
+                <tbody id="calendar-body">
+                    <tr><td colspan="6" style="color:var(--text-light);text-align:center;padding:40px;">Loading topics...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <div id="toast">Published Successfully!</div>
 
 <script>
-    // CONFIGURATION
-    // ---------------------------------------------------------
-    // REPLACE THIS WITH YOUR ACTUAL N8N WEBHOOK URL
-    const N8N_WEBHOOK_URL = 'https://n8n.srv1174105.hstgr.cloud/webhook/blog-dashboard'; 
-    // ---------------------------------------------------------
+    const N8N_WEBHOOK_URL = 'https://n8n.srv1174105.hstgr.cloud/webhook/blog-dashboard';
+    const N8N_API_URL     = 'https://n8n.srv1174105.hstgr.cloud/api/v1';
+    const N8N_API_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxYjc0ZTE1MC0xNGYwLTRjZTQtYmVhNi1mYzRjNzg1MmM5NDMiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiNTM3OTIzN2EtZTMwNy00MTNhLTg2ODUtMWUyMjBhOWMwOGU4IiwiaWF0IjoxNzc4MTEwMzM2fQ.S_WVMEpQ3oLlhXuWyIWh1JZl405sRwhzUsTKAVbn8n';
+    const CALENDAR_TABLE_ID = 'vhxlvCkJwerP2O0c';
 
+    // ── Tab switching ──
+    function switchTab(name) {
+        document.querySelectorAll('.tab-btn').forEach((b, i) => {
+            b.classList.toggle('active', ['drafts','calendar'][i] === name);
+        });
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        if (name === 'calendar') fetchCalendar();
+    }
+
+    // ── DRAFTS ──
     async function fetchDrafts() {
         const grid = document.getElementById('blog-grid');
         grid.innerHTML = '<p class="loading-text">Loading drafts...</p>';
-
         try {
-            const response = await fetch(N8N_WEBHOOK_URL, { method: 'GET' });
-            let data = await response.json();
-            
-            // --- SAFETY FIX: Convert single object to array if needed ---
-            if (!Array.isArray(data)) {
-                // If n8n sends a single object, wrap it in a list
-                data = [data];
-            }
-            // ------------------------------------------------------------
-            
-            grid.innerHTML = ''; // Clear loading
-
-            if (data.length === 0) {
-                grid.innerHTML = '<p class="loading-text">No drafts pending review.</p>';
+            const res = await fetch(N8N_WEBHOOK_URL, { method: 'GET' });
+            let data = await res.json();
+            if (!Array.isArray(data)) data = [data];
+            grid.innerHTML = '';
+            if (data.length === 0 || (data.length === 1 && !data[0].id)) {
+                grid.innerHTML = '<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><p>No drafts pending review.</p></div>';
                 return;
             }
-
-            data.forEach(post => {
-                if(post && post.id) {
-                    const card = createCard(post);
-                    grid.appendChild(card);
-                }
-            });
-
-        } catch (error) {
-            console.error('Error:', error);
-            grid.innerHTML = '<p style="color: #ff6b6b;">Error connecting to n8n. Check console.</p>';
+            data.forEach(post => { if (post && post.id) grid.appendChild(createCard(post)); });
+        } catch (e) {
+            console.error(e);
+            grid.innerHTML = '<p style="color:#ef4444;">Error connecting to n8n. Check console.</p>';
         }
     }
 
@@ -268,108 +469,225 @@
         div.className = 'card';
         div.id = `card-${post.id}`;
 
-        // Handle Image Logic
-        let imageHtml = '';
-        if (post.image_url && post.image_url.trim() !== "") {
-            imageHtml = `<div class="card-image" style="background-image: url('${post.image_url}')"></div>`;
-        } else {
-            // Used a simple SVG icon for no image state
-            imageHtml = `<div class="card-image"><div class="no-image-placeholder"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>No Image Available</div></div>`;
-        }
+        const imageHtml = (post.image_url && post.image_url.trim())
+            ? `<div class="card-image" style="background-image:url('${escHtml(post.image_url)}')">
+                 ${post.country ? `<span class="country-badge">${escHtml(post.country)}</span>` : ''}
+               </div>`
+            : `<div class="card-image"><div class="no-image-placeholder">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                 No Image
+               </div></div>`;
 
-        // Get meta_desc from post data (default to empty string if missing)
-        const metaDescValue = post.meta_desc || '';
+        const metaVal = escHtml(post.meta_desc || '');
+        const metaLen = (post.meta_desc || '').length;
+        const metaClass = metaLen >= 140 && metaLen <= 158 ? 'good' : metaLen > 0 && metaLen < 140 ? 'warn' : metaLen > 158 ? 'bad' : 'warn';
 
         div.innerHTML = `
             ${imageHtml}
             <div class="card-body">
                 <div>
                     <span class="label">Title</span>
-                    <input type="text" class="edit-input title-input" value="${post.title || ''}">
+                    <input type="text" class="edit-input title-input" value="${escHtml(post.title || '')}">
+                </div>
+                <div class="field-row">
+                    <div>
+                        <span class="label">Focus Keyword</span>
+                        <input type="text" class="edit-input kw-input" value="${escHtml(post.focus_keyword || '')}">
+                    </div>
+                    <div>
+                        <span class="label">Country</span>
+                        <select class="edit-input country-input">
+                            ${['UAE','Saudi Arabia','Egypt','Qatar','Kuwait','Bahrain','Oman','Jordan','Lebanon','Global'].map(c =>
+                                `<option value="${c}" ${c === (post.country||'UAE') ? 'selected' : ''}>${c}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div>
+                        <span class="label">Category</span>
+                        <select class="edit-input cat-input">
+                            ${['Digital Marketing','AI & Automation','SEO','Social Media','E-Commerce','Business Strategy','Technology'].map(c =>
+                                `<option value="${c}" ${c === (post.category||'Digital Marketing') ? 'selected' : ''}>${c}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <span class="label">Tags</span>
+                        <input type="text" class="edit-input tags-input" placeholder="tag1, tag2, tag3" value="${escHtml(post.tags || '')}">
+                    </div>
                 </div>
                 <div>
-                    <span class="label">Meta Description / Excerpt</span>
-                    <textarea class="edit-input short-input meta-input">${metaDescValue}</textarea>
+                    <span class="label">Meta Description <span style="font-weight:400;text-transform:none;letter-spacing:0;">(140–158 chars)</span></span>
+                    <div class="meta-wrapper">
+                        <textarea class="edit-input meta-input" oninput="updateCharCount(this)">${metaVal}</textarea>
+                        <div class="char-count ${metaClass}" id="cc-${post.id}">${metaLen} / 158</div>
+                    </div>
                 </div>
                 <div>
-                    <span class="label">Content (HTML/Markdown)</span>
-                    <textarea class="edit-input content-input">${post.content || ''}</textarea>
+                    <span class="label">Content (HTML)</span>
+                    <textarea class="edit-input content-input">${escHtml(post.content || '')}</textarea>
+                </div>
+                <div>
+                    <button class="btn btn-outline btn-sm" onclick="togglePreview(this, '${post.id}')">👁 Preview</button>
+                    <div class="preview-box" id="preview-${post.id}"></div>
                 </div>
                 <div class="card-actions">
-                    <button class="btn btn-publish" onclick="publishPost('${post.id}', '${post.image_url || ''}')">
-                        Approve & Post
+                    <button class="btn btn-primary" style="flex:1;" onclick="publishPost('${post.id}', '${escHtml(post.image_url || '')}', '${escHtml(post.schema_json ? post.schema_json.replace(/'/g,'') : '')}')">
+                        ✓ Approve &amp; Publish
                     </button>
                 </div>
-            </div>
-        `;
+            </div>`;
         return div;
     }
 
-    async function publishPost(id, imageUrl) {
+    function updateCharCount(textarea) {
+        const len = textarea.value.length;
+        const card = textarea.closest('.card');
+        const id = card.id.replace('card-','');
+        const el = document.getElementById('cc-' + id);
+        if (!el) return;
+        el.textContent = len + ' / 158';
+        el.className = 'char-count ' + (len >= 140 && len <= 158 ? 'good' : len > 0 && len < 140 ? 'warn' : len > 158 ? 'bad' : 'warn');
+    }
+
+    function togglePreview(btn, id) {
+        const card = document.getElementById('card-' + id);
+        const box = document.getElementById('preview-' + id);
+        const content = card.querySelector('.content-input').value;
+        if (box.style.display === 'block') {
+            box.style.display = 'none';
+            btn.textContent = '👁 Preview';
+        } else {
+            box.innerHTML = content;
+            box.style.display = 'block';
+            btn.textContent = '✕ Close Preview';
+        }
+    }
+
+    async function publishPost(id, imageUrl, schemaJson) {
         const card = document.getElementById(`card-${id}`);
         const title = card.querySelector('.title-input').value;
         const content = card.querySelector('.content-input').value;
-        // Grab the value from the new Meta Input field
         const metaDesc = card.querySelector('.meta-input').value;
-        
-        const btn = card.querySelector('.btn-publish');
+        const focusKeyword = card.querySelector('.kw-input').value;
+        const category = card.querySelector('.cat-input').value;
+        const tags = card.querySelector('.tags-input').value;
+        const country = card.querySelector('.country-input').value;
+        const btn = card.querySelector('.btn-primary');
 
-        // UI Loading State
         card.classList.add('loading');
-        btn.innerText = 'Publishing...';
+        btn.textContent = 'Publishing…';
         btn.disabled = true;
 
         const payload = {
-            id: id,
-            new_title: title,
-            new_content: content,
-            // Send it as 'excerpt' to n8n (as requested)
-            excerpt: metaDesc, 
-            image_url: imageUrl
+            id, new_title: title, new_content: content,
+            excerpt: metaDesc, image_url: imageUrl,
+            focus_keyword: focusKeyword, category, tags,
+            country, schema_json: schemaJson || ''
         };
 
         try {
-            // Send to n8n (POST request)
-            const response = await fetch(N8N_WEBHOOK_URL, {
+            const res = await fetch(N8N_WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-
-            if (response.ok) {
-                // Remove card from UI on success
-                card.style.transform = 'scale(0.9)';
+            if (res.ok) {
+                card.style.transform = 'scale(0.92)';
                 card.style.opacity = '0';
                 setTimeout(() => card.remove(), 300);
-                showToast("Published to WordPress!");
+                showToast('Published to WordPress! 🚀');
             } else {
-                const errorText = await response.text();
-                alert("Failed to publish. Server responded with: " + errorText);
-                resetCardState(card, btn);
+                const err = await res.text();
+                alert('Failed to publish: ' + err);
+                resetCard(card, btn);
             }
         } catch (e) {
             console.error(e);
-            alert("Error sending request. Check console for details.");
-            resetCardState(card, btn);
+            alert('Network error. See console.');
+            resetCard(card, btn);
         }
     }
 
-    function resetCardState(card, btn) {
+    function resetCard(card, btn) {
         card.classList.remove('loading');
-        btn.innerText = 'Approve & Post';
+        btn.textContent = '✓ Approve & Publish';
         btn.disabled = false;
     }
 
-    function showToast(message) {
-        const x = document.getElementById("toast");
-        x.innerText = message;
-        x.className = "show";
-        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+    // ── CONTENT CALENDAR ──
+    async function fetchCalendar() {
+        const tbody = document.getElementById('calendar-body');
+        tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-light);text-align:center;padding:40px;">Loading…</td></tr>';
+        try {
+            const res = await fetch(`${N8N_API_URL}/data-tables/${CALENDAR_TABLE_ID}/rows`, {
+                headers: { 'X-N8N-API-KEY': N8N_API_KEY }
+            });
+            if (!res.ok) throw new Error(res.status);
+            const { data } = await res.json();
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-light);text-align:center;padding:40px;">No topics yet. Add one above.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(row => `
+                <tr>
+                    <td style="font-weight:500;">${escHtml(row.topic || '')}</td>
+                    <td style="color:var(--text-light);">${escHtml(row.focus_keyword || '')}</td>
+                    <td>${escHtml(row.country || '')}</td>
+                    <td style="color:var(--text-light);">${escHtml(row.industry || '')}</td>
+                    <td><span class="status-badge status-${row.status || 'pending'}">${row.status || 'pending'}</span></td>
+                    <td style="color:var(--text-light);font-size:12px;">${row.createdAt ? new Date(row.createdAt).toLocaleDateString() : '—'}</td>
+                </tr>`).join('');
+        } catch (e) {
+            console.error(e);
+            tbody.innerHTML = '<tr><td colspan="6" style="color:#ef4444;text-align:center;padding:20px;">Error loading calendar.</td></tr>';
+        }
     }
 
-    // Load on start
+    function toggleAddForm() {
+        const panel = document.getElementById('add-topic-panel');
+        panel.classList.toggle('open');
+    }
+
+    async function addTopic() {
+        const topic    = document.getElementById('new-topic').value.trim();
+        const keyword  = document.getElementById('new-keyword').value.trim();
+        const country  = document.getElementById('new-country').value;
+        const industry = document.getElementById('new-industry').value.trim();
+        if (!topic || !keyword) { alert('Topic and Focus Keyword are required.'); return; }
+
+        try {
+            const res = await fetch(`${N8N_API_URL}/data-tables/${CALENDAR_TABLE_ID}/rows`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-N8N-API-KEY': N8N_API_KEY },
+                body: JSON.stringify({ data: [{ topic, focus_keyword: keyword, country, industry, status: 'pending' }] })
+            });
+            if (!res.ok) throw new Error(res.status);
+            ['new-topic','new-keyword','new-industry'].forEach(id => document.getElementById(id).value = '');
+            toggleAddForm();
+            showToast('Topic added to calendar!');
+            fetchCalendar();
+        } catch (e) {
+            console.error(e);
+            alert('Failed to add topic: ' + e.message);
+        }
+    }
+
+    // ── Utilities ──
+    function escHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'show';
+        setTimeout(() => { t.className = t.className.replace('show',''); }, 3000);
+    }
+
+    // Init
     fetchDrafts();
 </script>
-
 </body>
 </html>
