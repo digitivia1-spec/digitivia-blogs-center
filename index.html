@@ -579,6 +579,27 @@
     .rtl-text { direction: rtl; text-align: right; font-family: 'Noto Kufi Arabic', 'Inter', system-ui, sans-serif; }
     .ltr-text { direction: ltr; text-align: left; }
 
+
+
+    /* Responsive hardening: no overflowing cards, images, tables, or modals */
+    .wrap, .card, .cbody, .panel, .tbl-wrap, .preview-box, #modal-box { min-width: 0; max-width: 100%; }
+    .blog-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); align-items: stretch; }
+    .card { width: 100%; min-width: 0; }
+    .thumb { aspect-ratio: 16 / 9; height: auto; min-height: 180px; display: block; }
+    .thumb-img { width: 100%; height: 100%; object-fit: cover; display: block; background: var(--surface); }
+    .thumb img, .preview-box img, #modal-content img { max-width: 100% !important; height: auto !important; }
+    .preview-box, #modal-content { overflow-wrap: anywhere; word-break: normal; }
+    .content-inp, .meta-inp, .title-inp, .kw-inp { max-width: 100%; }
+    .meta-tools { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+    .meta-hint { font-weight:400; text-transform:none; letter-spacing:0; font-size:10px; color: var(--muted-2); }
+    .img-fallback { height: 100%; display:flex; align-items:center; justify-content:center; color: var(--muted); background: linear-gradient(145deg, var(--surface), var(--surface-2)); text-align:center; padding:18px; font-size:13px; }
+    .ctbl td, .ctbl th { overflow-wrap: anywhere; }
+
+    @media (max-width: 1280px) {
+      .generator-grid { grid-template-columns: repeat(3, minmax(150px, 1fr)); }
+      table.ctbl { min-width: 980px; }
+    }
+
     @media (max-width: 980px) {
       .intelligence-strip { grid-template-columns: repeat(2, 1fr); }
       .generator-grid { grid-template-columns: repeat(2, 1fr); }
@@ -666,9 +687,10 @@
         <div>
           <label class="lbl">Country</label>
           <select id="gen-country" class="inp">
-            <option>UAE</option><option>Saudi Arabia</option><option>Egypt</option>
-            <option>Qatar</option><option>Kuwait</option><option>Bahrain</option>
-            <option>Oman</option><option>Jordan</option><option>Lebanon</option><option>Global</option>
+            <option>Global</option><option>UAE</option><option>Saudi Arabia</option><option>Egypt</option><option>Iraq</option><option>Baghdad</option>
+            <option>Qatar</option><option>Kuwait</option><option>Bahrain</option><option>Oman</option><option>Jordan</option><option>Lebanon</option>
+            <option>United States</option><option>United Kingdom</option><option>Germany</option><option>France</option><option>Italy</option><option>Spain</option>
+            <option>Netherlands</option><option>Sweden</option><option>Switzerland</option><option>Canada</option><option>Australia</option><option>Singapore</option>
           </select>
         </div>
         <div>
@@ -720,9 +742,10 @@
         <div>
           <label class="lbl">Country</label>
           <select id="nw-country" class="inp">
-            <option>UAE</option><option>Saudi Arabia</option><option>Egypt</option>
-            <option>Qatar</option><option>Kuwait</option><option>Bahrain</option>
-            <option>Oman</option><option>Jordan</option><option>Lebanon</option><option>Global</option>
+            <option>Global</option><option>UAE</option><option>Saudi Arabia</option><option>Egypt</option><option>Iraq</option><option>Baghdad</option>
+            <option>Qatar</option><option>Kuwait</option><option>Bahrain</option><option>Oman</option><option>Jordan</option><option>Lebanon</option>
+            <option>United States</option><option>United Kingdom</option><option>Germany</option><option>France</option><option>Italy</option><option>Spain</option>
+            <option>Netherlands</option><option>Sweden</option><option>Switzerland</option><option>Canada</option><option>Australia</option><option>Singapore</option>
           </select>
         </div>
         <div>
@@ -884,7 +907,8 @@ function buildCard(post) {
   const language = normalizeLang(post.language || detectLanguage(post.title || post.content || 'english'));
 
   const thumbHtml = hasImg
-    ? `<div class="thumb" style="background-image:url('${escAttr(post.image_url)}')">
+    ? `<div class="thumb">
+         <img class="thumb-img" src="${escAttr(post.image_url)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'img-fallback',textContent:'Image could not load — WordPress media timed out'}));">
          <div class="thumb-overlay"></div>
          <div class="thumb-badges">
            ${post.country ? `<span class="badge badge-teal">${esc(post.country)}</span>` : ''}
@@ -903,7 +927,7 @@ function buildCard(post) {
   const metaLen = (post.meta_desc || '').length;
   const metaClass = metaLen >= 140 && metaLen <= 158 ? 'good' : 'warn';
   const seoScore = computeSEOScore(post);
-  const countries = ['UAE','Saudi Arabia','Egypt','Qatar','Kuwait','Bahrain','Oman','Jordan','Lebanon','Global'];
+  const countries = ['Global','UAE','Saudi Arabia','Egypt','Iraq','Baghdad','Qatar','Kuwait','Bahrain','Oman','Jordan','Lebanon','United States','United Kingdom','Germany','France','Italy','Spain','Netherlands','Sweden','Switzerland','Canada','Australia','Singapore'];
   const categories = ['Digital Marketing','AI & Automation','SEO','Social Media','E-Commerce','Business Strategy','Technology'];
 
   div.innerHTML = `
@@ -977,7 +1001,7 @@ function buildCard(post) {
       </div>
 
       <div>
-        <label class="lbl">Meta Description <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;">(ideal: 140–158 chars)</span></label>
+        <div class="meta-tools"><label class="lbl">Meta Description <span class="meta-hint">(ideal: 140–158 chars)</span></label><button type="button" class="btn btn-ghost btn-sm" onclick="autoFixMeta('${post.id}')">Auto-fix meta</button></div>
         <textarea class="inp inp-meta meta-inp ${language === 'arabic' ? 'rtl-text' : ''}" oninput="updateCounter(this,'${post.id}'); refreshSEO('${post.id}')">${esc(post.meta_desc || '')}</textarea>
         <div class="char-bar">
           <span class="char-num ${metaClass}" id="cn-${post.id}">${metaLen}</span>
@@ -1168,7 +1192,7 @@ async function publishPost(id, imgUrl) {
     id,
     new_title: title,
     new_content: content,
-    excerpt: meta,
+    excerpt: normalizeMeta(meta, title, kw),
     image_url: imgUrl,
     focus_keyword: kw,
     category: cat,
@@ -1395,6 +1419,38 @@ async function addTopic() {
   }
 }
 
+
+function normalizeMeta(meta, title='', kw='') {
+  let m = String(meta || '').replace(/\s+/g, ' ').trim();
+  const keyword = String(kw || '').trim();
+  if (!m) {
+    m = `Learn ${keyword || title} with Digitivia. Get a practical, source-backed AI automation playbook built for real business growth.`;
+  }
+  if (keyword && !m.toLowerCase().includes(keyword.split(' ')[0].toLowerCase())) {
+    m = `${keyword}: ${m}`;
+  }
+  if (m.length > 158) {
+    m = m.slice(0, 155).replace(/[\s,.;:-]+\S*$/, '') + '...';
+  }
+  if (m.length < 140) {
+    const add = ' Discover practical steps, trusted sources, and clear next actions with Digitivia.';
+    m = (m + add).slice(0, 158).replace(/[\s,.;:-]+\S*$/, '');
+  }
+  return m;
+}
+
+function autoFixMeta(id) {
+  const card = document.getElementById('card-' + id);
+  if (!card) return;
+  const metaEl = card.querySelector('.meta-inp');
+  const title = card.querySelector('.title-inp')?.value || '';
+  const kw = card.querySelector('.kw-inp')?.value || '';
+  metaEl.value = normalizeMeta(metaEl.value, title, kw);
+  updateCounter(metaEl, id);
+  refreshSEO(id);
+  toast('✓ Meta description fitted to SEO range');
+}
+
 /* ════════════════════════════════════════
    METRIC HELPERS
 ════════════════════════════════════════ */
@@ -1467,7 +1523,7 @@ function questionIntentScore(text) {
 
 function parseSources(row) {
   if (!row) return [];
-  let src = row.sources ?? row.source_urls ?? row.references ?? row.evidence_sources ?? row.real_sources ?? [];
+  let src = row.sources ?? row.source_urls ?? row.references ?? row.evidence_sources ?? row.real_sources ?? row.proof_json ?? row.evidence_json ?? row.sources_json ?? [];
   if (typeof src === 'string') {
     const trimmed = src.trim();
     if (!trimmed) return [];
