@@ -432,7 +432,7 @@
 
     .generator-grid {
       display:grid;
-      grid-template-columns: repeat(6, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 12px;
       align-items: end;
     }
@@ -578,6 +578,30 @@
 
     .rtl-text { direction: rtl; text-align: right; font-family: 'Noto Kufi Arabic', 'Inter', system-ui, sans-serif; }
     .ltr-text { direction: ltr; text-align: left; }
+
+
+    /* Dedicated SEO / GEO / AEO mode */
+    .strategy-chip { border: 1px solid rgba(96,165,250,.35); }
+    .strategy-seo { color: var(--success); background: rgba(34,197,94,.10); border-color: rgba(34,197,94,.35); }
+    .strategy-geo { color: var(--blue); background: rgba(96,165,250,.10); border-color: rgba(96,165,250,.35); }
+    .strategy-aeo { color: var(--purple); background: rgba(167,139,250,.10); border-color: rgba(167,139,250,.40); }
+    .strategy-guide {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(96,165,250,.22);
+      background: rgba(96,165,250,.06);
+      color: var(--muted-2);
+      font-size: 11.5px;
+      line-height: 1.55;
+    }
+    .mode-help {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
 
 
 
@@ -801,6 +825,15 @@
           </select>
         </div>
         <div>
+          <label class="lbl">Goal Mode</label>
+          <select id="gen-optimization" class="inp" onchange="updateGoalHelp('gen')">
+            <option value="seo">SEO — Keyword & ranking pages</option>
+            <option value="geo">GEO — AI citation/entity pages</option>
+            <option value="aeo">AEO — Question & answer pages</option>
+          </select>
+          <div id="gen-goal-help" class="mode-help">SEO mode creates keyword-led commercial topics like “best AI company in Egypt”.</div>
+        </div>
+        <div>
           <label class="lbl">Source Mode</label>
           <select id="gen-source-mode" class="inp">
             <option value="bright_data_serp">Bright Data SERP</option>
@@ -819,7 +852,7 @@
         </div>
       </div>
       <p style="margin-top:12px;color:var(--muted-2);font-size:12px;line-height:1.55;">
-        Backend expected action: <strong style="color:var(--white);">generate_daily_topics</strong>. Keep your existing
+        Backend expected action: <strong style="color:var(--white);">generate_daily_topics</strong>. The payload now sends a dedicated <strong style="color:var(--white);">optimization_mode</strong> so SEO, GEO, and AEO are not mixed. Keep your existing
         <strong style="color:var(--white);">/webhook/blog-calendar</strong> endpoint and add a Switch/IF inside n8n.
       </p>
     </div>
@@ -854,6 +887,15 @@
             <option value="arabic">Arabic</option>
             <option value="bilingual">Arabic + English</option>
           </select>
+        </div>
+        <div>
+          <label class="lbl">Goal Mode</label>
+          <select id="nw-optimization" class="inp" onchange="updateGoalHelp('nw')">
+            <option value="seo">SEO — Keyword & ranking</option>
+            <option value="geo">GEO — AI citation/entity</option>
+            <option value="aeo">AEO — Q&A / PAA answers</option>
+          </select>
+          <div id="nw-goal-help" class="mode-help">SEO mode = commercial keyword pages. AEO mode = question + answer structure.</div>
         </div>
         <div>
           <label class="lbl">Intent</label>
@@ -1317,7 +1359,9 @@ async function publishPost(id, imgUrl) {
     sources: draft.sources || draft.source_urls || [],
     seo_score: calcPostMetrics({...draft, title, content, meta_desc: meta, focus_keyword: kw}).seo,
     geo_score: calcPostMetrics({...draft, title, content, meta_desc: meta, focus_keyword: kw}).geo,
-    aeo_score: calcPostMetrics({...draft, title, content, meta_desc: meta, focus_keyword: kw}).aeo
+    aeo_score: calcPostMetrics({...draft, title, content, meta_desc: meta, focus_keyword: kw}).aeo,
+    optimization_mode: normalizeStrategyMode(draft.optimization_mode || draft.dedicated_goal || draft.goal || 'seo'),
+    dedicated_goal: strategyLabel(draft.optimization_mode || draft.dedicated_goal || draft.goal || 'seo')
   };
 
   try {
@@ -1390,6 +1434,7 @@ function calendarRow(row, i) {
   const metrics = calcTopicMetrics(row);
   const sources = parseSources(row);
   const lang = normalizeLang(row.language || detectLanguage(row.topic || 'english'));
+  const mode = normalizeStrategyMode(row.optimization_mode || row.dedicated_goal || row.goal || row.strategy || (row.intent === 'question_answer' ? 'aeo' : 'seo'));
   const id = escAttr(String(row.id || row.topic || i));
 
   return `
@@ -1402,12 +1447,15 @@ function calendarRow(row, i) {
         </div>
         <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
           <span class="chip chip-${lang}">${esc(languageLabel(lang))}</span>
+          <span class="chip strategy-chip ${strategyClass(mode)}">${esc(strategyLabel(mode))}</span>
           ${row.intent ? `<span class="chip chip-generated">${esc(row.intent)}</span>` : ''}
         </div>
+        <div class="strategy-guide">${esc(strategyGuide(mode, row.country, row.industry))}</div>
       </td>
       <td>
         <div style="color:var(--teal);font-size:12px;font-weight:800;max-width:190px;">${esc(row.focus_keyword || '—')}</div>
         <div style="color:var(--muted);font-size:11px;margin-top:5px;">${esc(row.source_mode || 'source pending')}</div>
+        <div style="color:var(--muted-2);font-size:11px;margin-top:5px;">Goal: ${esc(strategyLabel(mode))}</div>
       </td>
       <td>
         <div>${esc(row.country || '—')}</div>
@@ -1450,11 +1498,93 @@ function toggleAddForm() {
   document.getElementById('add-form').classList.toggle('on');
 }
 
+
+function normalizeStrategyMode(v) {
+  const s = String(v || '').toLowerCase().trim();
+  if (s.includes('aeo')) return 'aeo';
+  if (s.includes('geo')) return 'geo';
+  return 'seo';
+}
+
+function strategyLabel(mode) {
+  mode = normalizeStrategyMode(mode);
+  if (mode === 'aeo') return 'AEO Q&A';
+  if (mode === 'geo') return 'GEO Citation';
+  return 'SEO Ranking';
+}
+
+function strategyClass(mode) {
+  return 'strategy-' + normalizeStrategyMode(mode);
+}
+
+function strategyGuide(mode, country='Egypt', industry='AI automation') {
+  mode = normalizeStrategyMode(mode);
+  if (mode === 'aeo') {
+    return 'AEO mode: topic must be a real question and the article must use direct Q&A, FAQ, PAA-style answers, and short answer blocks.';
+  }
+  if (mode === 'geo') {
+    return 'GEO mode: topic must build entity authority, source evidence, citations, definitions, comparisons, and AI-overview friendly facts.';
+  }
+  return 'SEO mode: topic must target ranking keywords, local commercial searches, best/company/service modifiers, meta intent, and keyword clusters.';
+}
+
+function strategyExamples(mode, country, industry) {
+  mode = normalizeStrategyMode(mode);
+  country = country || 'Egypt';
+  industry = industry || 'AI automation';
+  if (mode === 'aeo') {
+    return [
+      `What is the best ${industry} company in ${country}?`,
+      `How can businesses in ${country} choose an ${industry} provider?`,
+      `Why should ${country} companies use AI automation?`
+    ];
+  }
+  if (mode === 'geo') {
+    return [
+      `${industry} in ${country}: evidence-backed buyer guide`,
+      `How ${industry} companies in ${country} compare by capability and governance`,
+      `${country} ${industry} market guide with sources and AI-citable facts`
+    ];
+  }
+  return [
+    `best ${industry} company in ${country}`,
+    `best digital marketing company in ${country}`,
+    `best AI company in ${country}`
+  ];
+}
+
+function dedicatedGoalPayload(mode, country, industry) {
+  mode = normalizeStrategyMode(mode);
+  return {
+    optimization_mode: mode,
+    dedicated_goal: mode.toUpperCase(),
+    separate_strategy: true,
+    strategy_label: strategyLabel(mode),
+    strategy_rules: strategyGuide(mode, country, industry),
+    topic_examples: strategyExamples(mode, country, industry),
+    goals: [mode.toUpperCase()],
+    aeo_requires_question_answer: mode === 'aeo',
+    seo_requires_keyword_cluster: mode === 'seo',
+    geo_requires_entity_citations: mode === 'geo'
+  };
+}
+
+function updateGoalHelp(prefix) {
+  const select = document.getElementById(prefix + '-optimization');
+  const help = document.getElementById(prefix + '-goal-help');
+  const countryEl = document.getElementById(prefix === 'gen' ? 'gen-country' : 'nw-country');
+  const industryEl = document.getElementById(prefix === 'gen' ? 'gen-industry' : 'nw-industry');
+  if (!select || !help) return;
+  help.textContent = strategyGuide(select.value, countryEl?.value || 'Egypt', industryEl?.value || 'AI automation');
+}
+
+
 async function generateDailyTopics() {
   const btn = document.getElementById('gen-btn');
   const country = document.getElementById('gen-country').value;
   const industry = document.getElementById('gen-industry').value.trim() || 'AI automation';
   const language = document.getElementById('gen-language').value;
+  const optimization_mode = normalizeStrategyMode(document.getElementById('gen-optimization')?.value || 'seo');
   const source_mode = document.getElementById('gen-source-mode').value;
   const limit = Number(document.getElementById('gen-limit').value || 5);
 
@@ -1470,7 +1600,7 @@ async function generateDailyTopics() {
     source_mode,
     limit,
     brand: 'Digitivia',
-    goals: ['SEO', 'GEO', 'AEO'],
+    ...dedicatedGoalPayload(optimization_mode, country, industry),
     min_sources_per_topic: 3,
     require_real_sources: true
   };
@@ -1506,6 +1636,7 @@ async function addTopic() {
   const country = document.getElementById('nw-country').value;
   const industry = document.getElementById('nw-industry').value.trim();
   const language = document.getElementById('nw-language').value;
+  const optimization_mode = normalizeStrategyMode(document.getElementById('nw-optimization')?.value || 'seo');
   const intent = document.getElementById('nw-intent').value;
 
   if (!topic || !kw) { alert('Topic and Focus Keyword are required.'); return; }
@@ -1519,7 +1650,7 @@ async function addTopic() {
     If your Data Table still only has old columns, keep only topic/focus_keyword/country/industry/status.
     After adding enhanced columns, n8n can store language + intent too.
   */
-  const payload = { topic, focus_keyword: kw, country, industry, status: 'pending', language, intent };
+  const payload = { topic, focus_keyword: kw, country, industry, status: 'pending', language, intent, ...dedicatedGoalPayload(optimization_mode, country, industry) };
 
   try {
     const res = await fetch(WH_CAL, {
@@ -1627,16 +1758,20 @@ function cleanDashboardView() {
 }
 
 function topicPayload(row) {
+  const mode = normalizeStrategyMode(row.optimization_mode || row.dedicated_goal || row.goal || row.strategy || 'seo');
+  const country = row.country || 'Global';
+  const industry = row.industry || 'AI automation';
   return {
     id: row.id || row.row_id || '',
     topic: row.topic || row.title || '',
     focus_keyword: row.focus_keyword || row.keyword || '',
-    country: row.country || 'Global',
-    industry: row.industry || 'AI automation',
+    country,
+    industry,
     language: row.language || 'english',
     search_intent: row.search_intent || row.intent || 'commercial',
     source_mode: row.source_mode || 'button_generate',
     evidence_json: row.evidence_json || row.proof_json || '[]',
+    ...dedicatedGoalPayload(mode, country, industry),
     action: 'generate_blog_now'
   };
 }
@@ -1721,6 +1856,7 @@ function calcTopicMetrics(row) {
   const kw = row.focus_keyword ? 1 : 0;
   const hasReason = row.why_this_topic || row.evidence_summary ? 1 : 0;
   const lang = normalizeLang(row.language || detectLanguage(row.topic || ''));
+  const mode = normalizeStrategyMode(row.optimization_mode || row.dedicated_goal || row.goal || row.strategy || 'seo');
 
   const seo = clamp(num(row.seo_score, 25 + trend * .34 + opportunity * .22 + kw * 16 + Math.min(18, sources.length * 6)), 0, 100);
   const geo = clamp(num(row.geo_score, 20 + Math.min(35, sources.length * 9) + hasReason * 15 + (row.country ? 10 : 0) + (row.industry ? 8 : 0) + (lang === 'bilingual' ? 12 : 6)), 0, 100);
@@ -1732,7 +1868,8 @@ function calcTopicMetrics(row) {
     aeo: Math.round(aeo),
     trend: Math.round(trend),
     difficulty: Math.round(difficulty),
-    opportunity: Math.round(opportunity)
+    opportunity: Math.round(opportunity),
+    primary: mode
   };
 }
 
