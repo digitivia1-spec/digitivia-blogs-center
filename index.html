@@ -1360,8 +1360,9 @@ async function publishPost(id, imgUrl) {
     seo_score: calcPostMetrics({...draft, title, content, meta_desc: meta, focus_keyword: kw}).seo,
     geo_score: calcPostMetrics({...draft, title, content, meta_desc: meta, focus_keyword: kw}).geo,
     aeo_score: calcPostMetrics({...draft, title, content, meta_desc: meta, focus_keyword: kw}).aeo,
-    optimization_mode: normalizeStrategyMode(draft.optimization_mode || draft.dedicated_goal || draft.goal || 'seo'),
-    dedicated_goal: strategyLabel(draft.optimization_mode || draft.dedicated_goal || draft.goal || 'seo')
+    optimization_mode: rowStrategyMode(draft),
+    content_goal: rowStrategyMode(draft),
+    dedicated_goal: strategyLabel(rowStrategyMode(draft))
   };
 
   try {
@@ -1434,7 +1435,7 @@ function calendarRow(row, i) {
   const metrics = calcTopicMetrics(row);
   const sources = parseSources(row);
   const lang = normalizeLang(row.language || detectLanguage(row.topic || 'english'));
-  const mode = normalizeStrategyMode(row.optimization_mode || row.dedicated_goal || row.goal || row.strategy || (row.intent === 'question_answer' ? 'aeo' : 'seo'));
+  const mode = rowStrategyMode(row);
   const id = escAttr(String(row.id || row.topic || i));
 
   return `
@@ -1448,9 +1449,9 @@ function calendarRow(row, i) {
         <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
           <span class="chip chip-${lang}">${esc(languageLabel(lang))}</span>
           <span class="chip strategy-chip ${strategyClass(mode)}">${esc(strategyLabel(mode))}</span>
-          ${row.intent ? `<span class="chip chip-generated">${esc(row.intent)}</span>` : ''}
+          ${(row.search_intent || row.intent) ? `<span class="chip chip-generated">${esc(row.search_intent || row.intent)}</span>` : ''}
         </div>
-        <div class="strategy-guide">${esc(strategyGuide(mode, row.country, row.industry))}</div>
+        <div class="strategy-guide">${esc(row.goal_note || row.topic_reason || strategyGuide(mode, row.country, row.industry))}</div>
       </td>
       <td>
         <div style="color:var(--teal);font-size:12px;font-weight:800;max-width:190px;">${esc(row.focus_keyword || '—')}</div>
@@ -1501,9 +1502,57 @@ function toggleAddForm() {
 
 function normalizeStrategyMode(v) {
   const s = String(v || '').toLowerCase().trim();
-  if (s.includes('aeo')) return 'aeo';
-  if (s.includes('geo')) return 'geo';
+  if (!s) return 'seo';
+
+  // AEO must be checked first because "SERP + AEO" can still contain SEO-like words.
+  if (
+    s.includes('aeo') ||
+    s.includes('answer engine') ||
+    s.includes('question_answer') ||
+    s.includes('question-answer') ||
+    s.includes('q&a') ||
+    s.includes('faq') ||
+    s.includes('paa') ||
+    s.includes('people also ask') ||
+    s.includes('direct answer') ||
+    s.includes('سؤال') ||
+    s.includes('إجابة')
+  ) return 'aeo';
+
+  if (
+    s.includes('geo') ||
+    s.includes('generative engine') ||
+    s.includes('ai overview') ||
+    s.includes('ai citation') ||
+    s.includes('entity') ||
+    s.includes('citation') ||
+    s.includes('llm') ||
+    s.includes('مصدر') ||
+    s.includes('اقتباس')
+  ) return 'geo';
+
   return 'seo';
+}
+
+function rowStrategyMode(row) {
+  row = row || {};
+  const joined = [
+    row.content_goal,
+    row.optimization_mode,
+    row.dedicated_goal,
+    row.goal,
+    row.strategy,
+    row.strategy_label,
+    row.goal_note,
+    row.topic_reason,
+    row.why_this_topic,
+    row.evidence_summary,
+    row.notes,
+    row.search_intent,
+    row.intent,
+    row.source_mode
+  ].filter(v => v !== undefined && v !== null).join(' | ');
+  return normalizeStrategyMode(joined || 'seo');
 }
 
 function strategyLabel(mode) {
@@ -1555,12 +1604,19 @@ function strategyExamples(mode, country, industry) {
 
 function dedicatedGoalPayload(mode, country, industry) {
   mode = normalizeStrategyMode(mode);
+  const label = strategyLabel(mode);
+  const rules = strategyGuide(mode, country, industry);
   return {
+    // Send the goal in several field names because the current n8n table/workflow
+    // may store source_mode/search_intent/topic_reason before it stores new columns.
+    content_goal: mode,
     optimization_mode: mode,
     dedicated_goal: mode.toUpperCase(),
+    goal: mode,
     separate_strategy: true,
-    strategy_label: strategyLabel(mode),
-    strategy_rules: strategyGuide(mode, country, industry),
+    strategy_label: label,
+    strategy_rules: rules,
+    goal_note: `${label}: ${rules}`,
     topic_examples: strategyExamples(mode, country, industry),
     goals: [mode.toUpperCase()],
     aeo_requires_question_answer: mode === 'aeo',
@@ -1592,15 +1648,23 @@ async function generateDailyTopics() {
   btn.disabled = true;
   startSoftProgress('Generating daily topics', 'Researching market signals and SEO/GEO/AEO opportunities…');
 
+  const goalPayload = dedicatedGoalPayload(optimization_mode, country, industry);
   const payload = {
     action: 'generate_daily_topics',
     country,
     industry,
     language,
-    source_mode,
+    // Include the goal in source_mode too so old n8n mappings cannot lose it.
+    source_mode: `${source_mode}_${optimization_mode}`,
+    source_mode_base: source_mode,
+    search_intent: optimization_mode === 'aeo' ? 'question_answer' : (optimization_mode === 'geo' ? 'informational' : 'commercial'),
+    intent: optimization_mode === 'aeo' ? 'question_answer' : (optimization_mode === 'geo' ? 'informational' : 'commercial'),
+    topic_reason: goalPayload.goal_note,
+    evidence_summary: goalPayload.goal_note,
+    why_this_topic: goalPayload.goal_note,
     limit,
     brand: 'Digitivia',
-    ...dedicatedGoalPayload(optimization_mode, country, industry),
+    ...goalPayload,
     min_sources_per_topic: 3,
     require_real_sources: true
   };
@@ -1650,7 +1714,25 @@ async function addTopic() {
     If your Data Table still only has old columns, keep only topic/focus_keyword/country/industry/status.
     After adding enhanced columns, n8n can store language + intent too.
   */
-  const payload = { topic, focus_keyword: kw, country, industry, status: 'pending', language, intent, ...dedicatedGoalPayload(optimization_mode, country, industry) };
+  const goalPayload = dedicatedGoalPayload(optimization_mode, country, industry);
+  const storedIntent = optimization_mode === 'aeo' ? 'question_answer' : intent;
+  const payload = {
+    topic,
+    focus_keyword: kw,
+    country,
+    industry,
+    status: 'pending',
+    language,
+    intent: storedIntent,
+    search_intent: storedIntent,
+    // Critical compatibility fix: the existing n8n workflow already stores source_mode,
+    // so the selected goal is persisted even before new goal columns are mapped.
+    source_mode: `manual_${optimization_mode}`,
+    topic_reason: goalPayload.goal_note,
+    evidence_summary: goalPayload.goal_note,
+    why_this_topic: goalPayload.goal_note,
+    ...goalPayload
+  };
 
   try {
     const res = await fetch(WH_CAL, {
@@ -1758,7 +1840,7 @@ function cleanDashboardView() {
 }
 
 function topicPayload(row) {
-  const mode = normalizeStrategyMode(row.optimization_mode || row.dedicated_goal || row.goal || row.strategy || 'seo');
+  const mode = rowStrategyMode(row);
   const country = row.country || 'Global';
   const industry = row.industry || 'AI automation';
   return {
@@ -1768,9 +1850,12 @@ function topicPayload(row) {
     country,
     industry,
     language: row.language || 'english',
-    search_intent: row.search_intent || row.intent || 'commercial',
-    source_mode: row.source_mode || 'button_generate',
+    search_intent: row.search_intent || row.intent || (mode === 'aeo' ? 'question_answer' : 'commercial'),
+    intent: row.search_intent || row.intent || (mode === 'aeo' ? 'question_answer' : 'commercial'),
+    source_mode: row.source_mode || `button_generate_${mode}`,
     evidence_json: row.evidence_json || row.proof_json || '[]',
+    content_goal: mode,
+    goal_note: row.goal_note || row.topic_reason || row.evidence_summary || strategyGuide(mode, country, industry),
     ...dedicatedGoalPayload(mode, country, industry),
     action: 'generate_blog_now'
   };
@@ -1856,7 +1941,7 @@ function calcTopicMetrics(row) {
   const kw = row.focus_keyword ? 1 : 0;
   const hasReason = row.why_this_topic || row.evidence_summary ? 1 : 0;
   const lang = normalizeLang(row.language || detectLanguage(row.topic || ''));
-  const mode = normalizeStrategyMode(row.optimization_mode || row.dedicated_goal || row.goal || row.strategy || 'seo');
+  const mode = rowStrategyMode(row);
 
   const seo = clamp(num(row.seo_score, 25 + trend * .34 + opportunity * .22 + kw * 16 + Math.min(18, sources.length * 6)), 0, 100);
   const geo = clamp(num(row.geo_score, 20 + Math.min(35, sources.length * 9) + hasReason * 15 + (row.country ? 10 : 0) + (row.industry ? 8 : 0) + (lang === 'bilingual' ? 12 : 6)), 0, 100);
