@@ -1882,9 +1882,21 @@ async function requestBlogGeneration(payload) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error(await res.text() || String(res.status));
-    finishProgress('Blog draft generated');
-    toast('✨ Blog draft generated');
+
+    const responseText = await res.text().catch(() => '');
+
+    // n8n can finish the long blog generation successfully, insert the draft,
+    // then still return HTTP 500 when the webhook is configured as lastNode and
+    // the last node has no output. This is NOT a generation failure.
+    // Treat this specific n8n response as a soft success and refresh Drafts.
+    const softSuccess = !res.ok && /No item to return was found/i.test(responseText || '');
+
+    if (!res.ok && !softSuccess) {
+      throw new Error(responseText || String(res.status));
+    }
+
+    finishProgress(softSuccess ? 'Draft generated — response normalized' : 'Blog draft generated');
+    toast(softSuccess ? '✨ Blog draft generated. n8n returned an empty final node, so the dashboard refreshed drafts.' : '✨ Blog draft generated');
     await fetchDrafts();
     if (_tab !== 'drafts') switchTab('drafts');
   } catch (e) {
